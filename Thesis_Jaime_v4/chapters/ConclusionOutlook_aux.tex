@@ -1,0 +1,20 @@
+\chapter{Conclusion and Outlook}
+\label{ch:conclusion}
+
+
+This thesis deals with the problem of minimizing the reflected mass for a 7-DOF LWR mounted on a linear axis. Needing a null space scheme for this minimization, the first approaches considered are in torque level. Projecting the gradient of the reflected mass into the null space shows poor performance close to maxima, where the commanded torques are not able to overcome the joints friction. An attractive potential approach overcomes this problem. For this potential, first the goal minimum is considered as goal position. This approach may be done offline, for a previously known trajectory of the robot. Offline computation would also include path planning to the minimum. This is necessary because the robot may go through local peaks of maximum reflected mass, on his trajectory to the global minimum. However, most of the tested grids show contour lines where the global minimum lies. This causes high discontinuity making this goal position undesired. 
+
+For the search of the local minimum two fundamental optimization techniques are considered: Trust region and line search. The trust region techniques require an analytical form of the reflected mass constrained to the null space motion. An attempt is done using curve-fitting, but not being successful, the line search techniques are preferred. For this a null space velocity that minimizes the reflected mass is needed. The Projected Gradient and the Reduced Gradient arise as possible approaches to obtain this velocity. Since we are minimizing locally, real-time capabilities in the final controller are pursued. The Reduced Gradient is therefore chosen for being more computationally efficient. This method also allows decoupling on the minimization. And exploiting this characteristic a joint limit avoidance strategy is developed.  The Reduced Gradient is obtained analytically and numerically. Inherent to the gradient descent method, oscillations close to the minima appear during the minimization. This happens when the problem is ill-conditioned (high condition number). Decreasing the step size causes slow motion, so other line search techniques are implemented in order to decrease oscillations and increase convergence rate. Three Conjugate Gradient Descent methods are tested, showing in general worse convergence than the original Gradient Descent. Two Quasi-Newton methods are tested as well, showing in general not a significant improvement in the convergence rate w.r.t. the Gradient Descent. Therefore, the Gradient Descent is chosen for simplicity. Still showing oscillations, an algorithm is developed in which several iterations are computed in order to detect and decrease these oscillations. Finally a  non-normalized joint velocity is chosen. This bounded velocity,  shows good dynamics in the minimization and ensures no oscillations close to minima.
+
+The implementation of the Gradient Descent algorithm is implemented in a real-time capable controller. The controller is tuned for both, the analytical and the numerical Reduced Gradient. The addition of damping is necessary to ensure good behavior of the joints, specially linear axis. The analytical approach shows to be more computationally efficient, and the numerical approach shows to have more robust parameters.
+Finally the controller is implemented in parallel with the SMU. The SMU ensures safe motion of, while the controller here developed shows to improve the performance of the robot.
+
+
+
+
+\section{Future work}
+\label{sec:future_work}
+
+\subsection{Generalization to n-DOF}
+\label{subsec:extension_ndof}
+

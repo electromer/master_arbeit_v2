@@ -1,0 +1,131 @@
+\chapter{Introduction}
+\label{ch:Introduction}
+
+
+
+
+
+\section{Safety in Robotics}
+
+The term \textit{robot} was firstly used in 1921 by Karel Capek in Prague's National Theater in his play \textit{Rossum's Universal Robot}. But it was Isaac Asimov who made the term worldwide known with the famous \textit{three laws of robotics}, which regard the robot behavior for safe human-robot interaction. \\
+The concept of \textit{safety} in robotics is as old as the term \textit{robot} itself. But the implementation of safe human-robot interaction  has changed during the history. While in the past, the first robots had to be encaged and kept far from humans, it is likely that in a few years there will be robots in our homes helping with the daily tasks. However, service robots are not yet as implemented as industrial robots. Robots with whom workers work side by side. \\
+The basis of any kind of interaction between humans and robot must be the safety. The human may interfere the task that the robot is performing without any risk, and the robot must react (stopping, modifying its trajectory,...) in a way that it does not suppose any threat to the human companion. Trying always to execute its task as long as no danger exist. 
+There are several strategies that the robot can perform to ensure safety. These may be divided in: pre-collision and post-collision schemes .
+
+\section{Pre-collision Schemes}
+\label{sec:pre_collision}
+
+
+In terms of collision avoidance, a strategy worth mentioning is the collision-free path planning. Here the robot is given a goal position and it has to determine a trajectory to reach the goal without colliding against any obstacle. The two principal techniques  in this direction are \cite{Craig:1989:IRM:534661}: farming a connected-graph representation of the free space and then searching the graph for a collision-free path \cite{Bobrow}, \cite{Shin}, \cite{Lozano}. And the use of repulsive fields for the robot to keep the distance with the obstacles, and  attractive fields towards a goal position \cite{Khatib1}.
+
+\section{Post-collision Schemes}
+\label{sec:decreasing_harm}
+
+In some applications collisions are unavoidable, as it occurs in assembly. Here collision detection plays a major role. In this thesis the focus will be on strategies based to ensure that the human is not harmed. A key concept to decrease the harm of collision is the \textit{robot effective mass}. This is the mass perceived at the end-effector, so it is clear that decreasing this mass will decrease the harm caused to the human.
+
+
+%\label{sec:null_space_intro}
+
+When it comes to implementation the  robot must be able to perform its main task(s), with little or no interference from this safety strategy.
+For this redundant robots have a major advantage over non-redundant robots. 	A redundant manipulator is one with more degrees of freedom (DOF) than the number of DOFs required to execute its task \cite{redundant}. Usually it is understood as redundant robot that one with more than 6 DOFs, but a robot with 6 DOFs, or less, can still be redundant if it performs tasks where the domain requires less DOFs to be executed. These extra DOFs can be used for example for joint limit and singularity avoidance \cite{JLA_1}, \cite{redundant}.
+
+% A redundant manipulator is one with more degrees of freedom (DOFs) than the number of DOFs required to reach every point in the workspace \cite{redundant}.
+
+
+
+
+\section{Contribution and Outline of the Thesis}
+\label{sec:contribution_intro}
+
+In this thesis a null space scheme to decrease the robot effective mass in a 8 DOF robot is designed and implemented.
+The considered robot is a DLR Lightweight Robot (LWR) which is mounted on a linear axis. The flexibility and dexterity of the LWR are increased with a 1-DOF prismatic joint. The robot’s redundant degrees of freedom are exploited to minimize the reflected mass in the end-effector, without affecting the desired robot trajectory. The redundancy resolution scheme extends the compliant impedance control framework commonly used at DLR \cite{citeulike:11821616}. \\
+%
+The implementation of the null space controller is done in combination with a safety velocity controller proposed in \cite{sammi_paper}. This safety velocity controller limits the robot speed to a biomechanically safe value provided the mass and the curvature in the direction of movement. The controller developed in this thesis improves the performance of the robot while the safety velocity controller ensures a safe motion. Furthermore, the minimization technique implemented in the controller allows joint limit avoidance.
+
+This thesis is organized as follows. The Chapter \ref{ch:Previouswork} begins with an introduction to the robot dynamics, the calculation of the reflected mass and the concept of redundancy together with null space projectors. In this chapter previous work is also summarized, including: an algorithm to obtain all the null space positions of the 8-DOF robot, a controller to ensure safe motion, and possible techniques to minimize the mass in the 7-DOF LWR. These techniques use null space projections at torque level.  These techniques are extended  to the 8-DOF robot in  Chapter \ref{ch:control}. The first technique projects the gradient straight forward into the null space, while the second is based on an attractive potential.  For this attractive potential, a goal position needs to be commanded. Two different goal positions are considered, first the global minimum in Section \ref{ch:globaloptimization}, and second a local minimum  in Section \ref{ch:localoptimization}. The Section  \ref{ch:globaloptimization} begins with a discussion on obtaining an analytical formula for the self-motion manifold. Without it, a numerical approach is used, where an algorithm to find the global minimum is implemented. \\
+Two fundamental local minimization techniques are reviewed in Section \ref{ch:localoptimization}, namely Trust Region  and Line Search techniques. The Line Search techniques can be addressed as the problem of finding a null space velocity which minimizes the reflected mass. Different schemes to obtain this null space strategy are proposed in Chapter \ref{ch:velocity}. In this chapter, first a Projected Gradient is considered. %Similar to the approach from Chapter \ref{ch:extension8dof} but at velocity level. 
+Secondly, the Reduced Gradient method is implemented, where only the gradient w.r.t.  the two redundant joints is minimized. A decoupling in the minimization w.r.t. the redundant joint is proposed in Section \ref{sec:Decoupling}. This decoupling allows to weight the gradient w.r.t. both joints. Based on this decoupling, a joint limit avoidance strategy is proposed in Section \ref{subsec:wf_JLA}.
+In Section \ref{sec:othermethods}, other Line Search techniques are discussed for the two dimensional problem. These techniques include the Conjugate Gradient Descent and the Quasi-Newton's methods. The chapter finishes with a comparison between all these Line Search techniques.\\
+The Reduced Gradient method is implemented in a controller and tested in the real robot. This is done in a numerical and an analytical way. Chapter \ref{ch:experiments} summarizes the experiments carried out on the real robot. Different directions to project the mass are tested while the end-effector is static, and while it is following a trajectory. The influence of the parameters to tune in both approaches, numerical and analytical, is discussed here.  The controller is also implemented in combination with the safety velocity controller, and performance tests are carried out. \\
+Finally, Chapter \ref{ch:conclusion} presents the conclusions of this work and summarizes the contents of the thesis.
+
+
+
+
+%TODO: write sections in the diagram
+
+%TODO: rewrite outline
+
+%TODO: check if all references are consistent. Looking at the pdf version
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{tikzpicture}[>=stealth,every node/.style={shape=rectangle,draw,rounded corners},]
+% create the nodes
+\node (c1) {Obtaining null space torques (Ch. \ref{ch:control}  )};
+\node (gbm) [below left=of c1, align=left]{Gradient-based \\minimization (Sec. \ref{sec:Gradientbasedminimization}  )};
+\node (potential) [right=of gbm, align=left]{Minimization based \\on attractive potential (Sec. \ref{sec:Minimattractivepotential} ) };
+\node (gposition) [below =of potential, align=left]{Obtaining \\goal position };
+\node (global) [below left=of gposition, align=left]{Global\\ minimization (Sec. \ref{sec:globaloptimization} )};
+\node (local) [below right=of gposition, align=left]{Local\\ minimization (Sec. \ref{sec:localoptimization} )};
+\node (lsearch) [below left=of local, align=left]{Line search (Ch. \ref{ch:velocity}  )};
+\node (tregion) [right =of lsearch, align=left]{Trust region (Sec. \ref{sec:iterative_strategies} )};
+\node (GD) [below left=of lsearch, align=left]{Gradient Descent};
+\node (PG) [below =of GD, align=left]{Projected \\  (Sec. \ref{sec:PGvsRG} )};
+\node (RG) [below right=of GD, align=left]{Reduced \\  (Sec. \ref{sec:1D2D} )};
+\node (CGD) [below =of tregion, align=left]{Conjugate Gradient Descent (Sec. \ref{subsec:CJD})};
+%\node (NM) [below =of CGD, align=left]{Newton's methods (Sec.  )};
+\node (QNM) [below =of CGD, align=left]{Quasi-Newton's methods (Sec. \ref{subsec:quasinewton})};
+\node (analytical) [below =of RG, align=left]{Analytical\\ (Sec. \ref{sec:analytical})};
+\node (JLA) [left =of analytical, align=left]{Joint Limit Avoidance \\ (Sec. \ref{subsec:wf_JLA})};
+\node (numerical) [right=of analytical, align=left]{Numerical\\ (Sec. \ref{sec:numerical})};
+\node (end) [below =of analytical, align=left]{Implementation and tuning \\in real robot controller (Ch. \ref{ch:experiments})};
+% connect the nodes
+\draw[->] (c1) to[out=200,in=45] (gbm);
+\draw[->] (c1) to[out=200,in=115] (potential);
+\draw[->] (potential) to[out=230,in=100] (gposition);
+\draw[->] (gposition) to[out=230,in=100] (global);
+\draw[->] (gposition) to[out=230,in=100] (local);
+\draw[->] (local) to[out=230,in=70] (lsearch);
+\draw[->] (local) to[out=230,in=100] (tregion);
+\draw[->] (lsearch) to[out=230,in=70] (GD);
+\draw[->] (lsearch) to[out=230,in=180] (CGD);
+%\draw[->] (lsearch) to[out=230,in=180] (NM);
+\draw[->] (lsearch) to[out=230,in=180] (QNM);
+\draw[->] (GD) to[out=290,in=100] (RG);
+\draw[->] (GD) to[out=290,in=70] (PG);
+\draw[->] (RG) to[out=250,in=90] (analytical);
+\draw[->] (RG) to[out=250,in=120] (numerical);
+\draw[->] (RG) to[out=250,in=70] (JLA);
+\draw[->] (analytical) to[out=230,in=100] (end);
+\draw[->] (numerical) to[out=230,in=100] (end); 
+%\draw[->] (c1) to[out=0,in=135] (potential);
+%\draw[->] (c1.west) to[out=180,in=180] (gbm.west);
+%\draw[->] (global) to[out=180,in=75] (local);
+%\draw[->] (global) -- (lsearch);
+%\draw[->] (global.south east) -- (tregion);
+%\draw[->] (global.-5) to[out=0,in=110] (c8);
+%\draw[->] (global.5) to[out=0,in=110] (c9);
+%\draw[->,dashed] (gbm) -- (local);
+%\draw[->,dashed] (gbm) -- (lsearch);
+%\draw[->,dashed] (gbm.5) to[out=0,in=225] (tregion.south);
+%\draw[->,dashed] (gbm.east) to[out=0,in=225] (c8.south);
+%\draw[->] (gbm.-5) to[out=0,in=135] (potential.west);
+\label{diag:structure_thesis}
+\end{tikzpicture}

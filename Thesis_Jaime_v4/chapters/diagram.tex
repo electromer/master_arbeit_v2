@@ -1,0 +1,56 @@
+\chapter{Diagram}
+
+%\section{Detailed Validation Results}
+
+\label{chapter:diagram}
+
+
+
+
+\begin{tikzpicture}[>=stealth,every node/.style={shape=rectangle,draw,rounded corners},]
+% create the nodes
+\node (c1) {Obtaining null space torques};
+\node (gbm) [below left=of c1]{Gradient-based minimization};
+\node (potential) [right=of gbm]{Minimization based on attractive potential };
+\node (gposition) [below =of potential]{Obtaining goal position};
+\node (global) [below left=of gposition]{Global minimization};
+\node (local) [below right=of gposition]{Local minimization};
+\node (lsearch) [below left=of local]{Line search};
+\node (tregion) [right =of lsearch]{Trust region};
+\node (GD) [below left=of lsearch]{Gradient Descent};
+\node (CGD) [below =of tregion]{Conjugate Gradient Descent};
+\node (NM) [below =of CGD]{Newton methods};
+\node (QNM) [below =of NM]{Quasi-Newton methods};
+\node (analytical) [below left=of GD]{Analytical};
+\node (numerical) [right=of analytical]{Numerical};
+\node (end) [below =of analytical]{Implementation and tuning in real robot controller};
+% connect the nodes
+\draw[->] (c1) to[out=200,in=45] (gbm);
+\draw[->] (c1) to[out=200,in=115] (potential);
+\draw[->] (potential) to[out=230,in=100] (gposition);
+\draw[->] (gposition) to[out=230,in=100] (global);
+\draw[->] (gposition) to[out=230,in=100] (local);
+\draw[->] (local) to[out=230,in=70] (lsearch);
+\draw[->] (local) to[out=230,in=100] (tregion);
+\draw[->] (lsearch) to[out=230,in=70] (GD);
+\draw[->] (lsearch) to[out=230,in=180] (CGD);
+\draw[->] (lsearch) to[out=230,in=180] (NM);
+\draw[->] (lsearch) to[out=230,in=180] (QNM);
+\draw[->] (GD) to[out=230,in=70] (analytical);
+\draw[->] (GD) to[out=230,in=120] (numerical);
+\draw[->] (analytical) to[out=230,in=100] (end);
+\draw[->] (numerical) to[out=230,in=100] (end); 
+%\draw[->] (c1) to[out=0,in=135] (potential);
+%\draw[->] (c1.west) to[out=180,in=180] (gbm.west);
+%\draw[->] (global) to[out=180,in=75] (local);
+%\draw[->] (global) -- (lsearch);
+%\draw[->] (global.south east) -- (tregion);
+%\draw[->] (global.-5) to[out=0,in=110] (c8);
+%\draw[->] (global.5) to[out=0,in=110] (c9);
+%\draw[->,dashed] (gbm) -- (local);
+%\draw[->,dashed] (gbm) -- (lsearch);
+%\draw[->,dashed] (gbm.5) to[out=0,in=225] (tregion.south);
+%\draw[->,dashed] (gbm.east) to[out=0,in=225] (c8.south);
+%\draw[->] (gbm.-5) to[out=0,in=135] (potential.west);
+\end{tikzpicture}
+

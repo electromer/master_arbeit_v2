@@ -1,0 +1,176 @@
+\chapter{Previous work}
+\label{ch:Previouswork}
+
+
+First of all some existing work, on the 7-DOF LWR and on the 8-DOF considered robot, must be mentioned.
+
+
+
+\section{Algorithm for the Self-Motion Manifold}
+\label{sec:Fabianstuff}
+
+
+For the 7-DOF LWR a  one-dimension null space for the Jacobian   was previously studied at DLR. \textcolor{blue}{is there any reference for Ott??}. 
+The select-function that returns the velocity of the 7 rotational joints in the one-dimensional nullspace for non-singular configurations was found. Integrating this velocity over time results in all the joint positions corresponding to null space motions.
+
+
+Considering the  8-DOF, an algorithm to determine a grid of the self-motion manifold, was provided in \cite{fabianthesis}. The redundant joints considered in this work are the linear axis and the elbow, $q_1$ and $q_4$ respectively. In the algorithm first an integration of a self-motion manifold slice is done. A velocity with the form (\ref{eq:smms_velocity}) is used for this first step. 
+
+\begin{equation}
+\dot{\mathbf{q}}_* =\begin{pmatrix}0 \\ \vdots  \\ *\\ \vdots\\ *\end{pmatrix}.
+\label{eq:smms_velocity}
+\end{equation} 
+
+The first term must be zero to ensure that the position of the linear axis is constant.
+With this velocity is possible to obtain null space motions corresponding to the 8-DOF robot with a constant position of the linear axis.
+\textcolor{red}{recheck if this function is the same as Ott's with an extra zero or not}Secondly the integration is along the linear axis. A velocity $\dot{\mathbf{q}}_*$ orthogonal to the previous one is needed. It is obtained via Gram-Schmidt orthogonalization, having the second velocity vector $\dot{\mathbf{q}}_*^{\bot}$ the following property
+
+\begin{equation}
+\dot{\mathbf{q}}_*^\top\dot{\mathbf{q}}_*^{\bot}=0.
+\label{eq:orthogonalVelocityVectors}
+\end{equation}
+
+With this second velocity the integration is done along the linear axis. Obtaining in this way, the remaining positions of the null space of the 8-DOF considered robot.
+
+
+
+In this work the resulting error in the self-motion manifold calculation is analyzed as well. For this two different integration methods. And finally correction term was proposed to decrease the numerical errors of the grid calculation.  
+
+So with this algorithm is possible to compute all null space motions for the 8-DOF. 
+
+
+\begin{figure}[!htb]
+	\centerline{
+		\includegraphics[width=0.6\textwidth]{images/reflected_mass_y-crop.pdf}}
+	\caption{Plot of the reflected mass in y-direction against the self-motion 		manifold coordinates. The joint limits are not considered.}
+	\label{fig:reflected_mass_y-crop}
+\end{figure}
+
+As a practical implementation of this work, the reflected mass of this robot was analyzed by using the self-motion manifold grid. In Section \ref{sec:Nicostuff} it would be explained how the reflected mass of the robot can be obtained given a joint configuration and a direction of motion. 
+An example of this grid can be seen in Fig.	\ref{fig:reflected_mass_y-crop}.
+
+
+
+
+\section{Mass minimization in a 7 DOF LWR}
+\label{sec:Nicostuff}
+
+
+
+In \cite{paper_iros2017} the  minimization of the effective mass for a 7-DOF LWR robot was already discussed. This work includes an analysis of the effect of mass minimization on safety, finding reflected mass extrema that can be obtained by null space motions.
+
+The reflected mass model is here introduced. Later two minimization approaches are discussed.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Reflected robot mass}\label{sec:refl_mass_nico}
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+The considered flexible joint dynamics of the LWR can be expressed as
+\begin{equation}
+\mathbf{M} (\mathbf{q}) \ddot{\mathbf{q}} + \mathbf{C}(\mathbf{q}, \dot{\mathbf{q}}) \dot{\mathbf{q}} + \mathbf{g}(\mathbf{q})  = \mathbf{\tau}_J + \mathbf{\tau}_{r,\mathrm{ext}} \label{eq:flex_dyn_1}  \ ,
+\end{equation}
+\begin{equation}
+\mathbf{B} \mathbf{\theta} + \mathbf{\tau}_J  = \mathbf{\tau}_m - \mathbf{\tau}_f   ,
+\end{equation}
+\begin{equation}
+\mathbf{\tau}_J  = K(\mathbf{\theta} - \mathbf{q})  , 
+\end{equation}
+
+where $\mathbf{q} \in \mathbb{R}^n$ are the generalized coordinates $\mathbf{\theta} \in \mathbb{R}^n$ the motor positions, $\mathbf{M}(\mathbf{q})  \in \mathbb{R}^{n \times n}$ the symmetric, positive definite mass matrix, $\mathbf{C}(\mathbf{q}, \dot{\mathbf{q}})  \in \mathbb{R}^{n \times n}$ the Coriolis and centrifugal matrix, and $\mathbf{g}(\mathbf{q}) \in \mathbb{R}^n$ the gravity torque vector. The elastic joint torque and external torques are denoted $\mathbf{\tau}_J  \in \mathbb{R}^n$ and $\mathbf{\tau}_{r,\mathrm{ext}} \in \mathbb{R}^n$. The motor inertia is $\mathbf{B} \in \mathbb{R}^{n \times n}$, the motor torque and friction torque are $\mathbf{\tau}_m \in \mathbb{R}^n$ and $\mathbf{\tau}_f \in \mathbb{R}^n$, respectively. The motor and link side dynamics are coupled via the elastic joint torque $\mathbf{\tau}_J$.
+In \cite{haddadin_et_al_ijrr2009} \textcolor{red}{comprobar si esta cita es la misma info que on making robots understand safety} it was shown that for the DLR LWR III the link inertia is decoupled from the motor inertia during collisions. For the calculation of the reflected mass we therefore only consider the link side inertia. The Jacobian $J(\mathbf{q}) \in \mathbb{R}^{6 \times n}$ associated to the impact location can be rewritten as
+\begin{equation}
+\mathbf{J}(\mathbf{q}) = 
+\begin{bmatrix}
+\mathbf{J}_{v}(\mathbf{q}) \\
+\mathbf{J}_{\omega}(\mathbf{q})
+\end{bmatrix}.
+\label{eq:jacobian_expanded}
+\end{equation}
+The translational Cartesian velocity at the impact location is 
+$\mathbf{v} = J_{v}({\mathbf{q}}) \dot{\mathbf{q}}$. The velocity in normalized Cartesian direction $\mathbf{u} \in \mathbb{R}^3$ is 
+\begin{equation}
+\mathbf{v_u} = \mathbf{u}^T \mathbf{v} .
+\end{equation}
+
+The relation between $\mathbf{M}(\mathbf{q})$ and the Cartesian mass matrix $\Lambda(\mathbf{x})$ was derived in \cite{khatib1995} and is well known to be 
+\begin{equation}
+\mathbf{\Lambda}(\mathbf{x}) = \Bigl ( \mathbf{J}(\mathbf{q}) \mathbf{M}(\mathbf{q})^{-1} \mathbf{J}^{T}(\mathbf{q}) \Bigr )^{-1}. \label{eq:lambda}
+\end{equation}
+The inverse of the kinetic energy matrix can be decomposed into
+\begin{equation}
+\mathbf{\Lambda}^{-1}(\mathbf{q}) = 
+\begin{bmatrix}
+\mathbf{\Lambda}_{v}^{-1}(\mathbf{q}) & \overline{\mathbf{\Lambda}}_{v\omega}(\mathbf{q}) \\
+\overline{\mathbf{\Lambda}}_{v\omega}^T(\mathbf{q}) & \mathbf{\Lambda}_{\omega}^{-1}(\mathbf{q})
+\end{bmatrix}.
+\end{equation}
+The scalar mass perceived at the end effector given a force in unit direction $\mathbf{u}$ is
+\begin{equation}
+m_{u} = [\mathbf{u}^T \mathbf{\Lambda}_{v}^{-1}(\mathbf{q})   \mathbf{u}]^{-1}   .  \label{eq:reflected_robot_mass} 
+\end{equation}
+This quantity is referred to as the \emph{reflected mass} is direction $\mathbf{u}$.
+
+
+
+
+
+\subsection{Gradient-based minimization}
+\label{subsec:gbm_7DOF}
+
+The first approach to obtain null space torque, that minimizes the reflected inertia, is to project the numerical gradient of the reflected mass into the null space:
+ 
+\begin{equation}
+\mathbf{\tau}_d = \mathbf{\tau}_\mathrm{imp} - k (\mathbf{I} - \mathbf{J}^T \mathbf{J}^{\#T}) \nabla m_u(\mathbf{q}), \label{eq:gbm_nico}
+\end{equation}
+
+where $\mathbf{\tau}_\mathrm{imp}$ is the torque of the impedance controller and $\nabla m_u(\mathbf{q})$ is the gradient of the reflected mass \cite{paper_iros2017}. To obtain static and dynamic consistency \cite{khatib1995} the mass-weighted generalized inverse of the Jacobian $\mathbf{J}^{\#}$ is used.
+This approach was not able to overcome the friction close to local maxima. 
+
+
+
+
+\subsection{Minimization based on attractive potential}
+\label{subsec:minim_potential_intro}
+
+
+The second approach, considered in \cite{paper_iros2017}, is to submit the end effector to the gradient of an attractive potential field. This field is defined by 
+
+
+\begin{equation}
+U(\mathbf{q}) = - \frac{1}{2} K_p (\mathbf{q}_{m_u}^\ast - \mathbf{q})^T (\mathbf{q}_{m_u}^\ast - \mathbf{q}), \label{eq:potential_intro}
+\end{equation}
+
+where $\mathbf{q}_{m_u}^\ast$ is the goal position that minimizes the reflected mass. And projecting this torque into the null space
+\begin{equation}
+\mathbf{\tau}_d = \mathbf{\tau}_\mathrm{imp} + (I - J^T J^{\#T}) \mathbf{\tau}_{m_u}^\ast, \label{eq:potential_controller_intro}
+\end{equation}
+
+where 
+
+\begin{equation}
+\mathbf{\tau}_{m_u}^\ast = \frac{\partial {U(\mathbf{q})}}{\partial {\mathbf{q}}} = - K_p (\mathbf{q}_{m_u}^\ast - \mathbf{q}),
+\label{eq:torque_pot_intro}
+\end{equation}
+
+is the torque minimizing the reflected mass.
+The goal position is always the local minimum, so the problem of having low torques close to maxima does not appear here. Therefore, the results are better than using gradient-based minimization. 
+
+\section{Injury knowledge embedded into control}
+\label{sec:Samistuff}
+
+In \cite{sammi_paper} a relation between robot mass, velocity, impact geometry
+and resulting injury was formulated. With this injury knowledge an algorithm was developed to limit the velocity of the end-effector to ensure safe motions. This safety velocity controller is named Safe Motion Unit (SMU). 
+
+For different kind of objects, with different masses and geometries, the corresponding safety curves were created. As example one can see Fig. \ref{fig:Safety_curve_paper}
+
+
+\begin{figure}[htb]
+	\centerline{
+		\includegraphics[width=0.7\textwidth]{images/Safety_curve_paper.png}}
+	\caption{Conservative safety curve for a sphere. The IC2 points come from collision experiments performed in \cite{sammi_paper}. These points represent the threshold of the impacts for contusion without skin opening. To remain well below all observed IC2 injuries, a simple shifted regression line is chosen to represent the conservative injury limit.}
+	\label{fig:Safety_curve_paper}
+\end{figure}
+ 
+

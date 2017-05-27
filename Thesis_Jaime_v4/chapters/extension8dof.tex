@@ -1,0 +1,180 @@
+\chapter{Extension to the 8 DOF robot}
+\label{ch:extension8dof}
+
+
+
+
+
+\section{Gradient-based minimization}
+\label{sec:Gradientbasedminimization}
+
+As it was introduced in (\ref{eq:gbm_nico}), the null space projector $\mathrm{\mathbf{N_{\tau}}} = \mathrm{(\mathbf{I} - \mathbf{J}^T \mathbf{J}^{\#T})}$ may be used to project torques into the null space of the main task. 
+Similarly the null space projector $\mathrm{\mathbf{N_{\dot{q}}}} = \mathrm{(\mathbf{I} - \mathbf{J}^{\#} \mathbf{J})}$ may be used to project joint velocities into the null space. 
+ 
+ \TODO{If the scaling gain is high it ir oscillates around a point that is not a minimum. But with small gains it optimizes fine though...DOES THE CONDITION OF SPDness DO NOT APPLY TO THE PROJECTOR IN THE TORQUES??? In the papers I found it always refers to joint level :/ } 
+ \correction{in matlab postmultiplying by $M$ or premultiplying by $M^{-1}$ return P.D. matrices numerically tested} \\
+ \correction{if I cannot prove just say that the prerotation always applies for the velocity. All the papers where they are used (only in velocity level) refer to the Foundations of robotics of Yoshikawa to which I do not have acces.}
+ 
+ 
+\textbf{ THE FOLLOWING APPLIES SO FAR ONLY TO VELOCITIES:} \\
+\textcolor{magenta}{ This null space may be used to optimize some specific function $\mathrm{{p}={p}(\mathbf{q})}$. Now let us define its gradient $ \mathrm{\mathbf{\phi} =  \nabla {p}(\mathbf{q})}$ and a scaling factor  $k$. According to \cite{yoshikawa}, $\mathrm{p}$ is minimized for any scalar $k < 0$, and maximized for any scalar $k > 0$. This holds	as long as $\mathrm{\phi^{T} \mathbf{N} \phi}$ is semidefinite positive, being $\mathrm{\mathbf{N}}$ the null space projector, either in torque or velocity level. For the Moor-Penrose pseudoinverse this is true since the the null space projector is positive definite. For the mass weighted pseudoinverse the projector is non-definite since it is not symmetrical. Using the mass weighted pseudoinverse, the null space projector in for the joint velocities ($\mathrm{\mathbf{N_{\dot{q}}}}$) may be forced to be positive definite, by postmuliplying it by $\mathrm{\mathbf{M^{-1}}}$ as proposed in \cite{Nemec}. This ensures the best optimization step for the mass weighted pseudoinverse.} \\
+ 
+ 
+
+
+
+In torque level a different matrix must be taken to force positive definiteness. Let us take the mass matrix  $\mathrm{\mathbf{M}}$ instead.
+
+
+
+
+\begin{lemma}
+	Given the null space projector   $\mathrm{\mathbf{N_{\tau}}} = \mathrm{(\mathbf{I} - \mathbf{J}^T \mathbf{J}^{\#T})}$, where $\mathrm{\mathbf{J}^{\#}}$ is the mass weighted pseudoinverse \cite{khatib1995}. Then the form
+	\begin{equation}
+	\phi^{T} \mathbf{N_{\tau}} \mathbf{M} \phi
+	\label{eq:nemec_torque}
+	\end{equation}  is positive semi-definite.
+\end{lemma}
+
+\begin{proof}
+	First the symmetry is to be proven.
+	\begin{equation}
+	\begin{aligned}
+	\phi^{T} (\mathbf{I} - \mathbf{J}^T \mathbf{J}^{\#T}) \mathbf{M} \phi = \\
+	\phi^{T} (\mathbf{M} - \mathbf{J}^T 
+	\mathbf{ (J M^{-1} J^{T})^{-1}	J  M^{-1}	}\mathbf{M} ) \phi .
+	\end{aligned}	
+	\end{equation}
+	
+	The term $\mathrm{(\mathbf{M} - \mathbf{J}^T \mathbf{ (J M^{-1} J^{T})^{-1}	J })}$ is always symmetrical since $\mathrm{\mathbf{M}}$ is symmetrical.
+\end{proof}
+
+\begin{proof}
+	Now we have to prove that (\ref{eq:nemec_torque}) is positive semi-definite. For that the symmetric mass matrix is decomposed $\mathrm{\mathbf{M = U^{T} U}}$.
+	%
+	\begin{equation}
+	\begin{aligned}
+	\phi^{T} (\mathbf{I} - \mathbf{J}^T \mathbf{J}^{\#T}) \mathbf{U^{T} U} \phi = \\
+	\phi^{T} (\mathbf{U^{T} U} - \mathbf{J}^T 
+	\mathbf{ (J (U^{T} U)^{-1} J^{T})^{-1}	J } )\phi = \\
+	\phi^{T} (\mathbf{U^{T} U} - \mathbf{J}^T 
+	\mathbf{ (J (U^{T} U)^{-1} J^{T})^{-1}	J } \mathbf{(U^{T} U)}^{-1}	\mathbf{(U^{T} U)}) \phi 
+	\end{aligned}
+	\end{equation}
+	
+	Substituting $z=J U^{T}$ and $z=J U^{T}$
+	
+	
+\end{proof}
+	
+
+
+
+n project the gradient of the reflected mass into the null space. Chosing $k$ to be a positive scalar in (\ref{eq:gbm_nico}) a null space torque that minimizes $m_u$ is ensured. 
+\textcolor{red}{Explain here as well the stuff from Nemec and how the gradient has to be premultiplied by $M^{-1}$...but like it is in torque level I have to do the demonstration.} As in  \cite{paper_iros2017} the extension here done to the 8-DOF robot is for an unconstrained optimization problem, i.e. only the partial derivatives of the reflected mass w.r.t. the joints are considered. 
+In (\ref{eq:gbm_nico}) the gradient of the reflected mass was projected into the null space using the well known projector from \cite{khatib1995}. The same projector is used here in order to ensure static and dynamic consistency.  The equation (\ref{eq:reflected_robot_mass}) is used to expand the gradient as
+
+\begin{equation}
+\nabla m_u(\mathbf{q}) = 
+\frac{\partial {m_u(\mathbf{q})}}{\partial {q_i}} = \frac{\partial {[\mathbf{u^T} \Lambda_{v}^{-1}(\mathbf{q}) \mathbf{u}]^{-1}}}{\partial {q_i}}, \label{eq:grad_refl_mass_1}
+\end{equation}
+where, in our case with the 8-DOF,  $i = 1, \dots, 8$. This equation can be rewritten as
+\begin{equation}
+\nabla m_u(\mathbf{q}) = - \left [ \mathbf{u^T} \frac{\partial {\Lambda_{v}^{-1}}}{\partial {q_i}} \mathbf{u} +
+\frac{\partial {(\mathbf{u^T} \Lambda_{v}^{-1} \mathbf{u})}}{\mathbf{u}} \frac{\partial {\mathbf{u}}}{\partial {q_i}} \right ] m_u^2 \label{eq:grad_refl_mass_2}
+\end{equation}
+
+
+
+%
+\textbf{WITH THE NORMAL PROJECTOR:}\\
+ As with the 7-DOF LWR, the 8-DOF robot shows bad performance close to local maxima. This is an expected result because the mass matrix, and the Jacobian, do not depend on the linear axis position (see (\ref{eq:j_m_no__q1})). The rotational joints are not able to overcome the friction even for high values of $k$. This problem is not present in the linear axis which has a position controller. The linear axis is included into the whole-body impedance control framework using an admittance interface \cite{whole_body_imp}. Therefore, even small values for the torque cause a displacement of this joint. However, this movement is oscillatory, specially for high gains. These oscillations occur around the starting position of the linear axis. Therefore, this joint is not used for the minimization, because the projection is done onto a self-motion manifold slice for a constant position of the linear axis.
+%% 
+\textcolor{red}{I HAVE TO TEST THIS ON THE RT MACHINE AND SEE THAT THERE ARE LOW TORQUES ---- DO THIS IN A LOCAL MAXIMA IN THE CONSTRAINED GRID}
+% 
+% 
+\textcolor{blue}{ SINCE THE COMPUTATION OF THE PSEUDOINVERSE IS EXPENSIVE MAYBE IT COULD BE DONE THE IMPOSITION OF THE CONSTRAINT FOR THE ACCELERATIONS. AS IT IS DONE LATER TO OBTAIN A NULL SPACE VELOCITY, BUT HERE USED TO OBTAIN A NULL SPACE TORQUE}
+
+%% HERE THE SADDLE POINTS DO NOT MAKE SENSE ANYMORE. And not only close to maxima, but close to saddle point, which makes sense as the null  problem is characteristic of two dimensional data. 
+
+
+
+%One could think of obtaining new equations of motion for the robot, where the constraint of null space movement would be satisfied. Which using the Lagragian approach would be getting from 
+%
+%\begin{equation}
+%M(\mathbf{q})\ddot{\mathbf{q}}+C(\mathbf{q},\dot{\mathbf{q}})+G(\mathbf{q})=\mathbf{\tau} +J_c*\mathbf{\Lambda},
+%\label{joint_space_dynamics}
+%\end{equation}	
+%to	
+%
+%\begin{equation}
+%\bar{M}(\mathbf{q})\ddot{\mathbf{q}}+\bar{C}(\mathbf{q},\dot{\mathbf{q}})+\bar{G}(\mathbf{q})=\bar{\mathbf{\tau}},
+%\label{new_joint_space_dynamics}
+%\end{equation}	
+%
+%where $J_c$ is the [6x8] constrained Jacobian that express the null space movement and $\Lambda$ are the lagrangian multipliers. But one can see that none of the matrices in the new equation of motion would depend on $q_1$ as none of the originals depends on $q_1$, so this would actually solve nothing.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Minimization based on attractive potential}
+\label{sec:Minimattractivepotential}
+
+
+
+
+For the potential field  defined in (\ref{eq:potential_intro}) the aim is to find a suitable goal position, where the reflected mass on the tip of the robot in certain direction is minimal. Two possible goal positions are: Global minimum, determining all possible null space positions and then finding the local minima and global minimum. This is treated in  Chapter \ref{ch:globaloptimization}. And local minimum: an iterative solution is discussed in  Chapter \ref{ch:localoptimization}.
+Since the goal position is chosen to be far from local maxima the problem from the previous approach does not appear here.
+
+%\begin{equation}
+%U(\mathbf{q}) = - \frac{1}{2} Kp (\mathbf{q}_{m_u}^\ast - \mathbf{q})^T (\mathbf{q}_{m_u}^\ast - \mathbf{q}). \label{eq:potential_extension8}
+%\end{equation}
+
+%Differentiating we obtain a torque to project into the null space
+%
+%\begin{equation}
+%\mathbf{\tau}_{m_u}^\ast = \frac{\partial {U(\mathbf{q})}}{\partial {\mathbf{q}}} = - k (\mathbf{q}_{m_u}^\ast - \mathbf{q}).
+%\end{equation}
+%
+%
+%\begin{equation}
+%\mathbf{\tau}_d = \mathbf{\tau}_\mathrm{imp} + (I - J^T J^{\#T}) \mathbf{\tau}_{m_u}^\ast, \label{eq:potential_controller_extension8}
+%\end{equation}
+
+
+
+
+
+%\section{Conclusion}
+%\label{sec:conclusion_ext8}
+
+
+
+
+
+
+
+%
+
+%
+%
+%
+%
+
+
+
+
+
+
+
+

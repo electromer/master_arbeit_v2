@@ -1,0 +1,44 @@
+\chapter{Total derivative }
+\label{chapter:totalderivative}
+
+
+\textcolor{blue}{THIS IS JUST A PROOF OF HOW THE PARTIAL DERIVATIVE THAT NICO USES TO OBTAIN THE GRADIENT IN HIS PAPER IS WRONG. BECAUSE USING THE FULL DERIVATIVE (WITH THE NULL SPACE CONSTRAINT) DIFFERENT RESULTS COULD OBTAIN }
+
+Suppose that $f$ is a function of two variables, $x$ and $y$. Normally these variables are assumed to be independent. However, in some situations they may be dependent on each other. For example $y$ could be a function of $x$, constraining the domain of $f$ to a curve in   $\mathbb{R}^{2}$. In this case the partial derivative of $f$ with respect to $x$ does not give the true rate of change of $f$ with respect to changing $x$ because changing $x$ necessarily changes $y$. The total derivative takes such dependencies into account.
+
+For example, suppose
+
+$f(x,y)=xy.$
+
+
+The rate of change of $f$ with respect to $x$ is usually the partial derivative of f with respect to $x$; in this case,
+
+$ \frac{\partial f}{\partial x} = y.$
+
+
+However, if $y$ depends on $x$, the partial derivative does not give the true rate of change of f as x changes because it holds y fixed.
+
+Suppose we are constrained to the line
+
+$y= = 1-x$;
+
+
+then
+
+$f(x,y) = f(x,x) = x(1-x).$
+
+
+In that case, the total derivative of f with respect to x is
+
+$\frac{\mathrm{d}f}{\mathrm{d}x} = 1 - 2 x.$
+Instead of immediately substituting for y in terms of x, this can be found equivalently using the chain rule.
+
+ 
+Notice that this is not equal to the partial derivative:
+
+$ \frac{\mathrm{d}f}{\mathrm{d}x} = 1 - 2 x \neq \frac{\partial f}{\partial x} = y =1 - x.
+$
+
+So for example in the point $x=0.6$:
+
+$\frac{\partial f}{\partial x} > 0$, but  $ \frac{\mathrm{d}f}{\mathrm{d}x} < 0$

@@ -1,0 +1,210 @@
+\chapter{Diagram}
+
+%\section{Detailed Validation Results}
+
+\label{chapter:diagram}
+
+
+
+\tikzset{
+	>=stealth',
+	punktchain/.style={
+		rectangle, 
+		rounded corners, 
+		% fill=black!10,
+		draw=black, very thick,
+		text width=10em, 
+		minimum height=3em, 
+		text centered, 
+		on chain},
+	line/.style={draw, thick, <-},
+	element/.style={
+		tape,
+		top color=white,
+		bottom color=blue!50!black!60!,
+		minimum width=8em,
+		draw=blue!40!black!90, very thick,
+		text width=10em, 
+		minimum height=3.5em, 
+		text centered, 
+		on chain},
+	every join/.style={->, thick,shorten >=1pt},
+	decoration={brace},
+	tuborg/.style={decorate},
+	tubnode/.style={midway, right=2pt},
+}
+
+
+\begin{tikzpicture}
+[node distance=.8cm,
+start chain=going below,]
+\node[punktchain, join] (intro) {Introduktion};
+\node[punktchain, join] (probf)      {Problemformulering};
+\node[punktchain, join] (investeringer)      {Investeringsteori};
+\node[punktchain, join] (perfekt) {Det perfekte kapitalmarked};
+\node[punktchain, join, ] (emperi) {Emperi};
+\node (asym) [punktchain ]  {Asymmetrisk information};
+\begin{scope}[start branch=venstre,
+%We need to redefine the join-style to have the -> turn out right
+every join/.style={->, thick, shorten <=1pt}, ]
+\node[punktchain, on chain=going left, join=by {<-}]
+(risiko) {Risiko og gamble};
+\end{scope}
+\begin{scope}[start branch=hoejre,]
+\node (finans) [punktchain, on chain=going right] {Det finansielle system};
+\end{scope}
+\node[punktchain, join,] (disk) {Det imperfekte finansielle marked};
+\node[punktchain, join,] (makro) {InvesteringsmÃ¦ssige konsekvenser};
+\node[punktchain, join] (konk) {Konklusion};
+% Now that we have finished the main figure let us add some "after-drawings"
+%% First, let us connect (finans) with (disk). We want it to have
+%% square corners.
+\draw[|-,-|,->, thick,] (finans.south) |-+(0,-1em)-| (disk.north);
+% Now, let us add some braches. 
+%% No. 1
+\draw[tuborg] let
+\p1=(risiko.west), \p2=(finans.east) in
+($(\x1,\y1+2.5em)$) -- ($(\x2,\y2+2.5em)$) node[above, midway]  {Teori};
+%% No. 2
+\draw[tuborg, decoration={brace}] let \p1=(disk.north), \p2=(makro.south) in
+($(2, \y1)$) -- ($(2, \y2)$) node[tubnode] {Analyse};
+%% No. 3
+\draw[tuborg, decoration={brace}] let \p1=(perfekt.north), \p2=(emperi.south) in
+($(2, \y1)$) -- ($(2, \y2)$) node[tubnode] {Problemfelt};
+\end{tikzpicture}
+
+
+
+
+\begin{tikzpicture}[>=stealth,every node/.style={shape=rectangle,draw,rounded corners},]
+% create the nodes
+\node (c1) {Obtaining null space torques};
+\node (gbm) [below left=of c1]{Gradient-based minimization};
+\node (potential) [right=of gbm]{Minimization based on attractive potential };
+\node (gposition) [below =of potential]{Obtaining goal position};
+\node (global) [below left=of gposition]{Global minimization};
+\node (local) [below right=of gposition]{Local minimization};
+\node (lsearch) [below left=of local]{Line search};
+\node (tregion) [right =of lsearch]{Trust region};
+\node (GD) [below left=of lsearch]{Gradient Descent};
+\node (CGD) [below =of tregion]{Conjugate Gradient Descent};
+\node (NM) [below =of CGD]{Newton methods};
+\node (QNM) [below =of NM]{Quasi-Newton methods};
+\node (analytical) [below left=of GD]{Analytical};
+\node (numerical) [right=of analytical]{Numerical};
+\node (end) [below =of analytical]{Implementation and tuning in real robot controller};
+% connect the nodes
+\draw[->] (c1) to[out=200,in=45] (gbm);
+\draw[->] (c1) to[out=200,in=115] (potential);
+\draw[->] (potential) to[out=230,in=100] (gposition);
+\draw[->] (gposition) to[out=230,in=100] (global);
+\draw[->] (gposition) to[out=230,in=100] (local);
+\draw[->] (local) to[out=230,in=70] (lsearch);
+\draw[->] (local) to[out=230,in=100] (tregion);
+\draw[->] (lsearch) to[out=230,in=70] (GD);
+\draw[->] (lsearch) to[out=230,in=180] (CGD);
+\draw[->] (lsearch) to[out=230,in=180] (NM);
+\draw[->] (lsearch) to[out=230,in=180] (QNM);
+\draw[->] (GD) to[out=230,in=70] (analytical);
+\draw[->] (GD) to[out=230,in=120] (numerical);
+\draw[->] (analytical) to[out=230,in=100] (end);
+\draw[->] (numerical) to[out=230,in=100] (end); 
+%\draw[->] (c1) to[out=0,in=135] (potential);
+%\draw[->] (c1.west) to[out=180,in=180] (gbm.west);
+%\draw[->] (global) to[out=180,in=75] (local);
+%\draw[->] (global) -- (lsearch);
+%\draw[->] (global.south east) -- (tregion);
+%\draw[->] (global.-5) to[out=0,in=110] (c8);
+%\draw[->] (global.5) to[out=0,in=110] (c9);
+%\draw[->,dashed] (gbm) -- (local);
+%\draw[->,dashed] (gbm) -- (lsearch);
+%\draw[->,dashed] (gbm.5) to[out=0,in=225] (tregion.south);
+%\draw[->,dashed] (gbm.east) to[out=0,in=225] (c8.south);
+%\draw[->] (gbm.-5) to[out=0,in=135] (potential.west);
+\end{tikzpicture}
+
+
+SOME CODES:
+
+
+
+\begin{algorithm}[H]
+	\caption{ALGORITMO ENTERO DE FABIAN}
+	\label{alg:pasdasdming}
+	\begin{algorithmic}[1]
+		\Procedure{SelfMotionManifoldPart}{$\mathbf{q}_0$,$\mathbf{\Delta}\mathbf{q}_{0_{\text{hyper}}}$,$\mathbf{\Delta}\mathbf{q}_{0_{\mathrm{lin axis}}}$,$\Delta t$,$\mathrm{t_{{lin}_{max}}}$,$\mathrm{t_{{hyp}_{max}}}$}
+		% initial joint configuration for second step direction
+		%q_0 = zeros(8,t_x_max/dt+1);
+		\State $\mathbf{q}_{\mathrm{lin}}(0) \gets \mathbf{q}_0$
+		\State $\mathbf{\Delta}\mathbf{q}_{\mathrm{prev}}(0) \gets \mathbf{\Delta}\mathbf{q}_{0_{\text{hyper}}}$
+		\For{$i\gets0$; $i\Delta t<\mathrm{t_{{lin}_{max}}}$; $i+1$}
+		% prepare for the next step in linear axis direction
+		\State $\mathbf{q} \gets \mathbf{q}_{\mathrm{lin}}(i)$
+		\State $\mathbf{\Delta}\mathbf{q}_{0_{\text{hyper, last}}} \gets \mathbf{\Delta}\mathbf{q}_{\text{prev}}(i)$
+		\For{$j\gets0$; $j\Delta t<\mathrm{t_{{hyp}_{max}}}$; $j+1$}
+		%				% singularity check and calculate basis of nullspace
+		\State $[\mathbf{U},\mathbf{S},\mathbf{V}] \gets \text{SVD}(\mathbf{J}(\mathbf{q}))$
+		\State $\text{conditionNumber} \gets \mathbf{S}(1,1)/\mathbf{S}(6,6)$
+		\If{conditionNumber $>$ upperBound} \; \# singular Jacobian
+		\State \textbf{break}			
+		\EndIf
+		%				% orthogonal basis of the jacobian null space
+		\State $ \mathbf{v}_7 \gets \mathbf{V}(:,7)$
+		\State $ \mathbf{v}_8 \gets \mathbf{V}(:,8)$
+		%				
+		%				% Provide that first basis vector is not parallel to hyperplane
+		%				% with fixed linear axis and avoid division by zero
+		\If {$j\ne0$} \; \# integration step in hyperplane 
+		\State $\mathbf{\Delta}\mathbf{q} \gets$ \Call{SelectHyperplane}{$\mathbf{v}_7$,$\mathbf{v}_8$, $\mathbf{\Delta}\mathbf{q}_{0_{\text{hyper, last}}}$}
+		\Else  \; \# integration step in linear axis direction
+		\State $\mathbf{\Delta}\mathbf{q} \gets$ \Call{SelectLinearAxis}{$\mathbf{v}_7$,$\mathbf{v}_8$, $\mathbf{\Delta}\mathbf{q}_{0_{\text{linAxis}}}$}
+		\If {$\mathbf{\Delta}\mathbf{q} = $ stop algorithm} 
+		\State \textbf{break}
+		%				\If {$v_{1,7}=0\text{ and }v_{1,8}=0$} \# basis parallel to $\mathcal{H}^8_1(\mathbf{q})$
+		%				\State \textbf{break};
+		\EndIf
+		
+		\EndIf
+		\State $\mathbf{\Delta}\mathbf{q}\gets \frac{\mathbf{\Delta}\mathbf{q}}{\|\mathbf{\Delta}\mathbf{q}\|}$
+		
+		\State $\mathbf{q} \gets \mathbf{q} +\mathbf{\Delta}\mathbf{q} \Delta t$
+		%				% integration in linear axis direction
+		\If{j=0}
+		%				% store initial value for integration step in linear axis direction
+		\State $\mathbf{q}_{\mathrm{lin}}(i+1)\gets\mathbf{q}$	
+		\Else 
+		\State $\mathbf{\Delta}\mathbf{q}_{0_{\text{hyper, last}}} \gets \mathbf{\Delta}\mathbf{q}$
+		\If{j=1}
+		\State $\mathbf{\Delta}\mathbf{q}_{\text{prev}}(i+1) \gets \mathbf{\Delta}\mathbf{q}$
+		\EndIf
+		\EndIf
+		%				% save q value into q map
+		\State $\mathbf{Q}(i,j) = \mathbf{q}$
+		\EndFor
+		\EndFor
+		\State \Return $\mathbf{Q}$
+		\EndProcedure
+		
+	\end{algorithmic}
+	%	\caption{Self-Motion Manifold Grid}
+	\label{alg:samplingAlgorithm}
+\end{algorithm}
+
+\begin{algorithm}
+	\caption{RANDOM STUFF THE INTERNET}
+	\label{alg:packed-dna-hamming}
+	\begin{algorithmic}[1]
+		\Require{$x$ and $y$ are packed \DNA strings of equal length $n$}
+		\Statex
+		\Function{Distance}{$x, y$}
+		\Let{$z$}{$x \oplus y$} \Comment{$\oplus$: bitwise exclusive-or}
+		\Let{$\delta$}{$0$}
+		\For{$i \gets 1 \textrm{ to } n$}
+		\If{$z_i \neq 0$}
+		\Let{$\delta$}{$\delta + 1$}
+		\EndIf
+		\EndFor
+		\State \Return{$\delta$}
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}

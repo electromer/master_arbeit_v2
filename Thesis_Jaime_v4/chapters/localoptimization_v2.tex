@@ -1,0 +1,889 @@
+\chapter{Local Optimization}
+\label{ch:localoptimization}
+
+
+
+This chapter considers the search of the 
+local minimum in the reflected mass, for setting it as the goal position in the attractive potential from (\ref{eq:potential_intro}). Classical local minimization techniques can be divided  into trust region and line search   techniques. In this chapter a review on both is provided in \ref{sec:iterative_strategies}. For the line search methods, the gradient descent method is firstly considered. This gradient is used to obtain a null space velocity,  defining in this way the descent direction. Depending on the dimension of the gradient we can distinguish between Projected Gradient (PG), where the eight-dimensional gradient is projected into the null space, and Reduced Gradient (RG) where only the gradient w.r.t. the redundant joints ($q_1$ and $q_4$ in this case) is minimized. The RG is treated in detail in Section \ref{sec:1D2D}, where to ways of considered the two-dimensional minimization problem are discussed. In Section \ref{subsec:1Dminim} the problem is separated in two parts. First minimization inside the self-motion manifold slice for a constant position of the linear axis. And second along the linear axis. In Section \ref{subsec:2Dminim} the minimization is done w.r.t. both joints in each iteration. In this section two approaches are considered to compute the two-dimensional gradient, an analytical and a numerical one.
+A theoretical comparison of both approaches is done while the practical comparison, after implementation in the robot, is described in  Chapter \ref{ch:experiments}.
+Finally, other line search minimization schemes are considered and tested. The chapter concludes with a comparison of all the minimization schemes in  Section \ref{sec:comparison_local_minim}.
+% In the analytical approach, the velocities of the redundant joints($q_1$ and $q_4$) are determined imposing	 a decrease of the mass w.r.t. time. In the numerical approach, the change of the mass w.r.t. the redundant joints is obtained in a numerical way. The velocity of the remaining joints is computed in both approaches imposing the null space constraint.
+
+
+
+
+
+
+\section{Iterative strategies}
+\label{sec:iterative_strategies}
+
+The two fundamental iterative approaches for local optimization	 are trust region and line search.
+
+\subsection{Trust region}
+\label{subsec:tregion}
+
+Given an objective function to minimize. This  strategy firstly aims to obtain a subset of the region of this objective function. The subset has to contain the current point. Secondly it finds a minimum in this subset. The subset is often approximated using a quadratic function. This approximated function has a similar behavior to the original objective function in the vicinity of the current point. If the trust region is small enough, a step size will be found that decreases the objective function sufficiently. This makes sense because for general nonlinear functions a local approximation (like linear approximation or quadratic approximation)  is only locally valid.
+
+
+
+One of the requirements is then an analytical objective function, which will be locally approximated. In this case no analytic solution has been found (see Section \ref{subsec:imposing_ns_constraint}) which  provides all the possible null space positions, i.e. there is no analytical form of the objective function.
+
+%In Section \ref{sec:global_analytical} an attempt was done to find this analytical form using curve fitting. But first this required the point cloud of the data, so it suited only global minimization. And second this objective function is not independent of the direction of motion or the initial joint configuration.
+
+Another approach would be computing only a subset of the grid in a small region enclosing the current point. And find an analytical form which approximates the shape of this region. However, once the points are computed, it would be easier to compare the masses of these points than creating a function that would contain them in order to apply the trust region method. Therefore these methods are of no interest for this work.
+
+
+
+
+
+\subsection{Line search}
+\label{subsec:lsearch}
+
+
+XXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxx
+
+The first one considered is a projection that minimizes the gradient. Similar to the approach from Chapter \ref{ch:extension8dof} but in velocity level.\textcolor{red}{ NOT IMPLEMENTED YET}.
+
+XXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxx
+
+
+In the line search techniques, starting from the current iteration, a descent direction is chosen in order to minimize the objective function. Then the step size is computed to determine the distance to move in this direction. In each iteration the direction and the step size need to be computed. The descent direction can be computed by various methods, such as gradient descent (GD), Newton methods (NM) or Quasi-Newton methods (QNM). % And the step size can be determined either exactly or inexactly.
+Both line search methods and trust region methods generate a step using a model of the objective function. Therefore the lack of an analytical form as objective function arises here as in the trust region strategy.
+However, while the trust region methods use this model to generate a region, the line search methods use it to compute the descent direction.  For the line search methods another possibility is presented here to choose the descent direction. 
+%\subsubsection{Selection of descent direction}
+%\label{subsubsec:desc_direction}
+This problem of finding the descent direction can be addressed as finding null space velocity that minimizes the reflected mass. This velocity may be selected by a  select-function :
+
+\begin{align}
+\text{select}: \mathbf{C}\rightarrow\ker(\mathbf{J}(\mathbf{q})),\; \mathbf{q}\mapsto\dot{\mathbf{q}} .
+\end{align}
+
+%and integrating the differential equation
+%
+%\begin{equation}
+%\dot{\mathbf{q}}=\text{select}(\ker(\mathbf{J}(\mathbf{q}))),
+%\label{differentialEquationSelfMotion}	
+%\end{equation}
+%
+%it is possible to obtain the self-motions, also known as null space motions, of the robot.
+
+A first approach to obtain this null space velocity is to project the gradient into the null space by a null space projector. This process called Projected Gradient (PG) \cite{PG_RG} is analog to the one done in Section \ref{sec:Gradientbasedminimization} for null space velocities instead of null space torques. The null space velocity is then:
+
+\textcolor{red}{ADD NEMEC STUFF WITH MODIFIED PROJECTOR TO ENSURE MINIMIZATION USING THE MASS WEIGHTED PROJECTOR.}
+
+\begin{equation}
+\mathbf{\dot{q}}_{ns} =  - k (\mathbf{I} -  \mathbf{J}^{\#} \mathbf{J} ) \nabla m_u(\mathbf{q}), \label{eq:RG_dq}
+\end{equation}
+
+where  $k$ is again a positive scaling gain,  $\nabla m_u(\mathbf{q})$ is an eight-dimensional vector and $ \mathbf{J}^{\#} = \mathbf{M}^{-1} \mathbf{J}^{T} (\mathbf{J} \mathbf{M}^{-1} \mathbf{J}^{T})^{-1}$ is again the mass-weighed pseudoinverse \cite{khatib1995}. The computation of the $8x8$ pseudoinverse in each iterations makes this method computationally expensive. Aiming for real-time capabilities another approach is consider where the minimization problem has the dimension of the null space. This one named Reduced Gradient (RG) and is in general  analytically simpler and numerically faster than PG \cite{reduced_gradient}.
+The gradient of the reflected mass is now:
+
+\begin{equation}
+\nabla m_u(\mathbf{q}) = \left[
+\frac{\partial {m_u(\mathbf{q})}}{\partial {q_1}} \   \frac{\partial {m_u(\mathbf{q})}}{\partial {q_4}} \right], \label{eq:grad_refl_mass_RG}
+\end{equation}
+
+where,  $q_1 , \ q_4$,  are the redundant considered joints. These gradient is used for the velocity of these redundant joints, while for the velocity of the non-redundant joints the null space constrained has to be imposed. Given a null space motion, the following is satisfied
+\begin{equation}
+\mathbf{J} \dot{\mathbf{q}} = 0 .
+\label{eq:ns_motion}
+\end{equation}
+
+And separating between redundant (${\mathbf{q}}_{r}$) and non redundant (${\mathbf{q}}_{nr}$) joints we can express the previous equation as:
+\begin{equation}
+[\mathbf{J}_r \mathbf{J}_{nr}] [\mathbf{\dot{q}}_r \dot{\mathbf{q}}_{nr}]^T = 0    ,
+\label{eq:}
+\end{equation}
+
+\begin{equation}
+\dot{\mathbf{q}}_{nr} =  - \mathbf{J}_{nr}^{-1} \mathbf{J}_r \mathbf{\dot{q}}_r    ,
+\label{eq:ns_constraint}
+\end{equation}
+
+where $\mathbf{J}_{nr}$ and $\mathbf{J}_{r}$ are the Jacobians associated to the non-redundant and redundant joints respectively. So the new null space velocity is
+
+\begin{equation}
+\mathbf{\dot{q}}_{ns} = \left[\mathbf{\dot{q}}_{r}  \mathbf{\dot{q}}_{nr} \right ] 
+= \left[1 \ (-\mathbf{J}_{nr}^{-1} \mathbf{J}_r)  \right ]  \mathbf{\dot{q}_r}.
+\label{eq:ns_velocity_RG}
+\end{equation}
+
+This approach is often used in parallel manipulators where some of the joints are active and other passive, and a more detailed treatment can be found in \cite{Murray:1994:MIR:561828}. It is clear to see that if $\mathbf{J}_{nr}$ does not lose rank, its inversion is much more efficient than the computation of the pseudoinverse. Therefore this approach is implemented in this thesis.
+
+\textcolor{red}{DOES IT EXIST A REDUCED GRADIENT IN TORQUE LEVEL??...it does not appear on deLuca's papers}
+
+This velocity is normalized for now, and like in any GD approach care must be taken with the step size, here represented by the scaling gain $k$. High step size may cause oscillations and low may cause slow convergence. But this will be treated in detail in later in \textcolor{red}{\textbf{XXXX}}.  In practice the step size is chosen to be constant if the gradient of the cost function is Lipschitz. This is the case here because the rate of change of the reflected mass is bounded. Therefore a fixed step size is chosen.
+
+\textcolor{red}{"Mainly done to ensure an integration inside the null space grid. Because if the velocity is not normalized the jump between two self motion manifold slices can be too high when integrating along the linear axis. Then the new position will not be in the grid because the error is too high to be corrected by the correction term." THIS I HAVE TO REVIEW IN FABIAN'S WORK AGAIN BECAUSE HIS NULL SPACE MOTION SHOULD ENSURE NULL SPACE POSITIONS INDEPENDENT ON THE STEP}
+
+
+
+
+%
+%\subsubsection{Selection of step size}
+%\label{subsubsec:step_size}
+
+%There are several affects to take into account when choosing the step size. Some of them are particular for this work and that is why a separate section is written for it.
+
+
+
+%Between large and small step size the  differences are clear. A small step size is more likely to converge but requires more iterations. While a larger step size needs of less iterations but it is more prone to overshooting and zig-zag.
+
+%The upper limit of the step size depends mainly on the null space motion and the oscillations. It has to be small enough to ensure that all integrated joint configurations are inside the null space grid. At the same time a high value will cause zig-zag close to the minimum. 
+
+%As for the lower limit it will have to be high enough so the controller lead to good dynamics in the robot. 
+
+
+
+
+
+ %\cite{chong2013introduction}
+
+
+ 
+
+
+
+
+
+	
+	
+
+
+
+
+
+
+ 
+
+
+
+\section{Reduced Gradient for null space velocities}
+\label{sec:1D2D}
+
+Now the problem is to find the gradient of the reflected as in (\ref{eq:grad_refl_mass_RG}). This is a two-dimensional (2D) standard optimization problem that can be divided in two one-dimensional (1D) problems. In Section \ref{sec:Fabianstuff} a select-function for the 8-DOF robot was proposed. Here, the integration inside a self-motion manifold slice (for constant $q_1$) is separated from the integration along the linear axis. Using this select-function, a first idea is to choose as descent direction the direction that minimizes the reflected mass inside the self-motion manifold slice of the current linear axis position. Once the minimum in the self-motion manifold slice is found, the minimum along the linear axis is searched for. This iterative process can be considered as two 1D optimization problems, and it will be treated in detail in Section \ref{subsec:1Dminim}.
+
+The second option is to use a two-dimensional descent direction, i.e. dealing with the 2D problem without separating it in two 1D problems. This means obtaining the velocities of the redundant joints ($q_1$ and $q_4$) that minimize the mass in each iteration. This strategy will be elaborated in Section \ref{subsec:2Dminim}.
+
+
+
+
+
+Unlike in Section \ref{sec:Nicostuff}, the local minimum is not the first commanded position when the robotic system starts far from the minimum. This is because, working with two dimensional data, the same problem than with global minimization may occur: the robot may go through local peaks of maximum reflected mass, on his trajectory to the local minimum. This is explained in detail in Chapter \ref{ch:experiments}.
+
+
+
+\subsection{1D minimization}
+\label{subsec:1Dminim}
+
+
+
+
+
+
+
+
+XXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxx  \\XXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxx  \\XXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxx  \\XXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxx  \\XXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxx  \\XXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxx  \\
+In previous work \cite{paper_iros2017}, a numerical gradient-based minimization is implemented on the 7-DOF LWR. Lacking the inverse kinematics, the analytical imposition of this constraint is discarded. The same unconstrained optimization problem is used for the 8-DOF. The results are similar as with the 7-DOF obtaining too low torques close to maxima.
+
+XXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxx  \\XXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxx  \\XXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxx  \\XXXXXXXXXXXXXXXXXXxxXXXXXXXXXXXXXXXXXXxx  \
+
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+The quantities in (\ref{eq:grad_refl_mass_2}) can be expanded as follows
+\begin{equation}
+\frac{\partial {\Lambda_{v}^{-1}}}{\partial {q_i}} = \frac{\partial {J_v}}{\partial {q_i}} M^{-1} J_v^T + J_v \frac{\partial {M^{-1}}}{\partial {q_i}} J_v^T + J_v M^{-1} \left ( \frac{\partial {J_v}}{\partial {q_i}} \right )^T  ,
+\end{equation}
+\begin{align}
+	\frac{\partial {(\mathbf{u^T} \Lambda_{v}^{-1} \mathbf{u})}}{\partial {\mathbf{u}}}& = 2 \Lambda_{v}^{-1} \mathbf{u} \\
+	%	\partialfrac{\mathbf{u}}{q_i} & = \partialfrac{^0R_{EE}}{q_i} \mathbf{u}_{EE} \\
+	\frac{\partial {M^{-1}}}{\partial {q_i}} & = -M^{-1} 
+	\frac{\partial {M}}{\partial {q_i}} M^{-1},
+\end{align}
+
+
+where $J_v$ comes from the equation (\ref{eq:jacobian_expanded}).
+
+In the targeted robotic system the first joint, $q_1$, is of type translational. Therefore neither  the Jacobian or the mass matrix depend on $q_1$. Causing the derivative of the reflected mass w.r.t. this joint to be zero:
+
+
+\begin{equation}
+\frac{\partial {{J_v}}}{q_1} = \frac{\partial {{M^{-1}}}}{q_1} = 0,
+\label{eq:j_m_no__q1}
+\end{equation}
+
+
+so 
+\begin{equation}
+\frac{\partial {{\Lambda_{v}^{-1}}}}{q_1} = 0.
+\end{equation}
+
+And like $\mathbf{u}$ does not depend on the joint configuration, the partial derivative w.r.t. $q_1$ is $0$ as well.
+
+By looking at the grid from Fig.\ref{fig:reflected_mass_y-crop} one would expect that the reflected mass would depend on $q_1$. It does not depend because the null space constraint is not included in the formulation of the reflected mass (see  (\ref{eq:reflected_robot_mass})). Therefore we have  unconstrained optimization.  \textcolor{red}{In the paper \textit{Kinematic Modeling and Redundancy Resolution
+		for Nonholonomic Mobile Manipulators} de Luca  mentions nonholonomic constraints for the platform cz it cannot move in any direction. }
+
+% For a more detailed explanation on robots with translational joints refer to \cite{cartesianrobot}.
+
+
+To impose the constraint in the differeniation of the reflected mass one can work with full derivatives. But to differentiate $q_1$ w.r.t. the other joints, the inverse kinematics of the robotic system are needed. For the 7-DOF rotational joint robot an analytical inverse kinematics can be computed, like done in \cite{analyticalInverseKinematicComputation}. However, computing the inverse kinematics for the 8-DOF here considered is not straightforward, and it is not treated in this thesis.
+
+
+
+The problem is then treated as in \cite{paper_iros2017}, with unconstrained optimization using partial derivatives for the gradient. For that the gradient of the reflected mass w.r.t. all the joints is computed with Maple.
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  \\ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\\XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\\ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+
+
+
+
+%The work from \ref{sec:Fabianstuff} is modified here to allow integration along a whole self-motion manifold slice. 
+Here the two-dimensional minimization problem is separated in two one-dimensional minimization problems.
+
+ Starting in an initial joint configuration, first the closest local minimum inside the self-motion manifold slice is found using the Gradient Descent method (fom now on called GD). \textcolor{red}{ADD ABREVIATIONS LIST AT BEGINNING WORK } For this a velocity like (\ref{eq:smms_velocity}) is necessary.It is interesting to notice that this first step is like considering the LWR alone, without linear axis.
+
+
+To apply GD, it is necessary to obtain the derivative of the reflected mass w.r.t. $q_4$ within a null space motion. In Section \ref{subsec:imposing_ns_constraint} it was explained how this is not possible analytically. Using full derivatives would include the constraint in the optimization, but as explained in Section \ref{sec:Gradientbasedminimization} this is not possible due to the lack of the inverse kinematics on the robot. Therefore a numerical approximation is used. 
+
+
+%\subsection{Numerical implementation}
+%\label{subsec:implementation_gbm8}
+
+
+
+
+To obtain the gradient w.r.t. the elbow, starting on a specific point in the grid, the closest points in the self-motion-manifold slice for that current $q_4$ are obtained. The approximation is done dividing the difference between both  masses by the difference between both $q_4$ coordinates. 
+
+
+
+\begin{equation}
+\frac{\partial {m_u(\mathbf{q})}}{\partial {q_4}} \approx \frac{m_{new}(\mathbf{q_{new}}) - m_{actual}(\mathbf{q})}{ q_{4_{new}} - q_{4_{actual}}}.
+\label{eq:approx_grad_q4}
+\end{equation}
+
+
+
+Because the mass depends on all joint positions, it is necessary to obtain them every time, to evaluate the gradient. To obtain the gradient w.r.t. the linear axis an analog process is performed. For a motion inside a self-motion manifold with constant $q_4$, one can use a select-function $\dot{\mathbf{q}}_*^{\bot}$ that satisfies the equation (\ref{eq:orthogonalVelocityVectors}).
+
+
+
+
+Being the first step, find a minimum inside the current self-motion manifold slice for constant $q_4$. And then find a minimum along the linear axis. These two steps are performed till a local minimum in both dimensions is found.
+
+A minimum in both dimensions corresponds to a minimum on the grid. But not necessarily to the closest minimum, neither to the same minimum than the classic 2D minimization gives. In  Fig.\ref{fig:1D} one can see how starting in the same configuration the strategy in 1D (in black) and the one in 2D (in red) reach different local minima. In this example the minimum reached with the 2D strategy has a lower mass. But in other scenario it could be vice versa, i.e. the 1D strategy reaches a lower minimum. 	Therefore this is no criterion to compare both strategies.
+
+\begin{figure}[!htb]
+	\centerline{
+		\includegraphics[width=0.7\textwidth]{images/1D.eps}}
+	\caption{Isocontour lines for the comparison between the trajectory obtained with the minimization strategy in 2D (red) and with the minimization strategy in 1D (black). The color-bar indicates the different masses.}
+	\label{fig:1D}
+\end{figure}
+
+
+It could be obtained analytically like it is done for 2D, in the Section \ref{sec:analytical}. But the focus of this thesis is the 2D minimization, because this 1D optimization strategy is limited to the robotic system here considered. Aiming for a more general minimization technique the 2D case will be more developed in this thesis. Proposing in the Section \ref{sec:future_work} a generalization to a robotic system with n-DOF.
+
+On the other hand this strategy can be of interest when a decoupling between both joints is of interest. For example in presence of obstacles on the trajectory of the linear axis ($q_1$), the minimization could be switched and only done with the elbow ($q_4$).
+
+
+
+
+
+
+
+
+
+
+%\textcolor{red}{\textbf{THE NEXT PARAGRAPH CAN BE COMMENTED}
+%\color{red} this method has to be simpler explained or maybe even omitted because it is not really gradient descent method} For the LWR an implementation of this method was used in Nico’s paper {\color{red} hacer referencia y contar mas sobre su paper y su aproach} where the movement inside the null space was based on the kernel of the Jacobian found by Christian Ott {\color{red} hacer referencia}. This worked for the case of 1D null space so one intuitive way to solve the iterative minimization for the 2D null space case was find the next local minimum inside the initial self-motion-manifold-slice, and then “jump” between manifolds.  Instead of calculating the grid in 4 parts as it was done in previous work on this project, here it is calculated in 2 halves so the gradient descent method can be applied to the whole self-motion-manifold-slice. Then it jumps to the next self-motion-manifold-slice starting the gradient descent method in an equivalent point to the minimum in the previous self-motion-manifold-slice. And jumps between self-motion-manifold-slices till it finds the local minimum respect to both dimensions (not only inside self-motion-manifold-slices, i.e. with q1 constant, but also in the integration along q4). {\color{red} Here a more detailed explanation of the process is given: Once inside one self-motion-manifold-slice it gets the dq (either via Ott's kernel and because we know that inside one self-motion-manifold-slice dq1 is 0, or using Fabian's mehod based on SVD using all joints' positions because we know them). Then it applies the 1D gradient descent method. And then we jump to another self-motion-manifold-slice: if we used Fabian's method then we got $v_7$ and $v_8$ so we just have to orthogonalize to get the new dq; and if we used Ott's kernel then we need to do what we did not before: use Fabian's method based on SVD using all joints' positions because we know them to get $v_7$ and $v_8$ so we can orthogonalize to get the new dq. When jumping between self-motion-manifold-slices it is in both cases the approach that Fabian used but Ott's kernel is only used when working inside one self-motion-manifold-slice. INSTEAD OF CALLING IT FABIAN'S APPROACH EXPLAIN IT BETTER AS GRAMM-SCHMITT ORTHONORMALIZATION} .............................................................................32233020002222222222222222222222222222}
+
+
+\subsection{2D minimization}
+\label{subsec:2Dminim}
+
+Now the optimization problem is not separated in two. This means obtaining the velocities of the linear axis and the elbow that minimize the reflected mass in each step.
+
+The gradient is firstly obtained numerically as done in Section  \ref{subsec:1Dminim}. In general, a numerical approach can be noisy so an analytical one is implemented as well. These two approaches are treated more extensively in  Sections \ref{sec:numerical} and \ref{sec:analytical}, respectively.
+
+Once the velocity for the null space motion is obtained, it is integrated using a explicit Euler method. To improve the accuracy, a correction term is used, as in \ref{sec:Fabianstuff}. The algorithm checks if there is criss-cross patterns appear (zigzagging) close to the minimum. The zigzag and the strategies to deal with it are discussed in more detail in Sections \ref{subsubsec:zigzag} and  \ref{subsec:compare_local_minim_methods}.
+The last step is checking for joint limit violations. If the next iteration is beyond any limit the algorithm stops the minimization. The case where a external force pushes the joints beyond their limits is not considered so there is no repulsive potential that will move the robot joints back the reachable area. \textcolor{red}{THIS IS TO BE IMPLEMENTED}
+A pseudo code for the simplified algorithm can be seen is listed in Algorithm \ref{alg:2D_alg}, where the velocity may in line \ref{2D_alg:line:select}  be obtained numerically (see Section \ref{sec:numerical}) or analytically (see Section \ref{sec:analytical}). 
+
+\textcolor{blue}{the zigzag strategy from line \ref{2D_alg:line:zigzag} is explained in the sections mentioned a few lines above}
+
+
+\begin{algorithm}[H]
+	\caption{2D Minimization}
+	\label{alg:2D_alg}
+	%	{\fontsize{9}{9}\selectfont
+	\begin{algorithmic}[1]
+		\State $\mathbf{q}_1 \leftarrow \mathbf{q}$
+		\State $m_{u,\min} \leftarrow m_u(\mathbf{q})$
+		
+%		\State $\dot{\mathbf{q}}_0 \leftarrow -(I - J^\dagger(\mathbf{q}) J(\mathbf{q})) \nabla m_u (\mathbf{q})$
+%		
+%		\State $\dot{\mathbf{q}}_0 \leftarrow \frac{\dot{\mathbf{q}}_0}{||\dot{\mathbf{q}}_0||}$			
+		
+		\For{$i \leftarrow 1$ to $n_{\max}$}
+		
+		\State $\dot{\mathbf{q}}_{i+1} \leftarrow \mathrm{select}(\mathrm{ker}(J(\mathbf{q}_i)))$ \label{2D_alg:line:select}
+		
+%		\State $\dot{\mathbf{q}}_{i+1} \leftarrow \mathrm{sign}(\dot{\mathbf{q}}_{i+1}^T \dot{\mathbf{q}}_{i}) \dot{\mathbf{q}}_{i+1}$
+		
+		\State $\mathbf{q}_{i+1} \leftarrow \mathbf{q}_i + \Delta t \, \dot{\mathbf{q}}_{i+1}$
+		
+%		\If{$ zigzag$}
+%		\State \textbf{increase $n_{\max}$} \label{2D_alg:line:zigzag}
+%		\EndIf
+	\State $\mathrm{zigzag \ strategy}$ \label{2D_alg:line:zigzag}
+		
+%		\State $m_u(\mathbf{q}_{i+1}) \leftarrow [\\mathbf{u}^T \Lambda_{v}^{-1}(\mathbf{q}_{i+1}) \\mathbf{u}]^{-1}$
+		\If{$|q| < |q_{limit}|$}
+		
+		\State $m_{u,\min} \leftarrow m_u(\mathbf{q}_{i+1})$
+		
+		\State $\mathbf{q}_{m_u}^\ast \leftarrow \mathbf{q}_{i+1}$
+		
+		\State $\dot{\mathbf{q}}_{i} \leftarrow \dot{\mathbf{q}}_{i+1}$
+		
+		\Else
+		
+		\State $\mathbf{q}_{m_u}^\ast \leftarrow \mathbf{q}_{i}$		
+		
+		\State \textbf{break}
+		\EndIf
+
+%%THE NEXT IF FROM NICO'S CODE IS NOT USED BECAUSE I GUARANTEE THE MASS IS MINIMIZED WHEN I OBTAIN THE VELOCITIES OF THE REDUNDANT JOINTS, NUMERICALLY OR ANALYTICALLY
+%		\If{$m_u(\mathbf{q}_{i+1}) < m_{u,\min}$}
+%		
+%		\State $m_{u,\min} \leftarrow m_u(\mathbf{q}_{i+1})$
+%		
+%		\State $\mathbf{q}_{m_u}^\ast \leftarrow \mathbf{q}_{i+1}$
+%		
+%		\State $\dot{\mathbf{q}}_{i} \leftarrow \dot{\mathbf{q}}_{i+1}$
+%		
+%		\Else
+%		
+%		\State $\mathbf{q}_{m_u}^\ast \leftarrow \mathbf{q}_{i}$		
+%		
+%		\State \textbf{break}
+%		\EndIf
+		\EndFor
+	\end{algorithmic}
+	%	}
+\end{algorithm}
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Analytical Gradient Descent}
+\label{sec:analytical}
+
+An analytical approach to compute the gradient is often preferred over a numerical one. \textcolor{blue}{why is the next sentence crossed?} Although for an approximated result, the numerical may be a better choice if the analytical is too slow. Or simply if the analytical is not available.
+
+%Since differentiation of the reflected mass is not an option (see \ref{subsec:imposing_ns_constraint}) another way to obtain the velocity of the redundant joints is needed. 
+
+
+
+Using \ref{eq:ns_constraint} The change of the reflected mass ${\dot{m}_u}$ can be expanded as
+
+\begin{equation}
+{\dot{m}_u}=\nabla m_u(\mathbf{q}) \dot{\mathbf{q}} = \left[ \frac{\partial {m_u(\mathbf{q})}}{\partial{\mathbf{q_{r}}}} + \frac{\partial {m_u(\mathbf{q})}}{\partial{\mathbf{q_{nr}}}}  (- \mathbf{J}_{nr}^{-1} \mathbf{J}_r) \right ]  \mathbf{\dot{q}_r} ,
+\label{eq:mass_expanded}
+\end{equation}
+
+where the null space constraint (\ref{eq:ns_constraint}) has been used to separate between redundant and non-redundant joints. By defining
+
+\begin{equation}
+\mathbf{J_{ma}} = \left[ \frac{\partial {m_u(\mathbf{q})}}{\partial{\mathbf{q_{r}}}} + \frac{\partial {m_u(\mathbf{q})}}{\partial{\mathbf{q_{nr}}}}  (- \mathbf{J}_{nr}^{-1} \mathbf{J}_r) \right ] ,
+\label{eq:jma}
+\end{equation}
+
+we obtain 
+\begin{equation}
+\mathbf{\dot{q}_r} = \mathbf{J_{ma}}^{-1} {\dot{m}_u},
+\label{eq:qr_jma}
+\end{equation}
+
+where ${\dot{m}_u}$ can be forced why \textcolor{blue}{"forced" is a wrong word?} to be negative by formulating it as the difference between a desired mass $m_{des}$ and the reflected mass in the current configuration $m_{u_{current}}$ scaled by a gain $\gamma$
+
+
+\begin{equation}
+{\dot{m}_u} =  \gamma (m_{des} - m_{u_{current}}).
+\label{eq:m_dot_analytical_1}
+\end{equation}
+
+By again imposing the null space constraint, one obtains all joint velocities to minimize the mass
+
+\begin{equation}
+\mathbf{\dot{q}} = [1\quad  -\mathbf{J}_{nr}^{-1} \mathbf{J}_r]^T   \mathbf{J_{ma}}^{-1} \gamma (m_{des} - m_{u_{current}})  .
+\end{equation}
+
+
+
+
+
+\section{Numerical Gradient Descent}
+\label{sec:numerical}
+
+The numerical GD for 2D minimization, can be considered as an extension of the 1D minimization strategy. In Section \ref{subsec:1Dminim}, the minimum in one dimension was first found, and only then the search for a minimum in the other dimension was started. Here the minimum is searched in both dimensions in each iteration. For this, firstly the gradient w.r.t. the fourth joint is obtained (using the same equation \ref{eq:approx_grad_q4}). Secondly, the gradient w.r.t. the linear axis is obtained in the same way. 
+
+By computing the gradient in this way a clear advantage becomes visible. It is not possible to find false minima as it can be a saddle point. This is a problem that appeared in Section \ref{sec:Gradientbasedminimization} \textcolor{blue}{why is this crossed?? } projecting directly the gradient of the mass into the null space.
+
+
+Once we obtain the gradient (or a close approximation) w.r.t. both $q_1$ and $q_4$, the velocities of the six non redundant joints are obtained. One could think that the velocity of the remaining joints is not necessary \textcolor{blue}{why there is an interrogation here??} to move along the slope of the grid as long as we have the gradient w.r.t. $q_1$ and $q_4$. But in each iteration is necessary to obtain $m_u(\mathbf{q})$, therefore we need all joint positions to compute the gradient.  
+
+Another option would be determine the new positions of $q_1$ and $q_4$ after a small displacement on the direction of their gradients and via inverse kinematics obtain the remaining joint coordinates. But obtaining the inverse kinematics of the 8-DOF robotic system is out of the scope of this thesis.
+
+\subsection{Particularities of the approach}
+
+\subsubsection{Treatment \textcolor{blue}{why is this crossed?? } of the velocity}
+
+Previously the velocity has been normalized before integrating. When applying the GD method in two dimensions, it is likely that the minimum is first reached in one dimension, then in the other one. An example of this is in Fig.\ref{fig:weird case}. In \ref{fig:gradients_weird_case} one can see how the gradients w.r.t. the linear axis ($\frac{\partial {m_u(\mathbf{q})}}{\partial{\mathbf{q_{1}}}}$) and the elbow ($\frac{\partial {m_u(\mathbf{q})}}{\partial{\mathbf{q_{4}}}}$) decrease within time. At 114.45 s the minimum in a self-motion manifold slice is found, but the gradient w.r.t. the elbow is still not zero. When this occurs there is an abrupt change in the joint velocities, see Fig.\ref{fig:velocities_weird_case}.
+This is because when $\frac{\partial {m_u(\mathbf{q})}}{\partial{\mathbf{q_{1}}}} = 0$ the minimization is done inside a self-motion manifold slice. 
+
+\textcolor{red}{IT WOULD BE FUCKIN COOL IF YOU FIND A CONFIGURATION WHERE THE ELBOW REACHED ITS MINIMUM FIRST TO SEE IF (NORMALIZING) dq IS CONSTANT AS WELL, OR IT VARIABLE. I GUESS IT SHOULD BE CONSTANT BECAUSE THE NULL SPACE IS ONE DIMENSION THEREFORE A NORMALIZED VELOCITY HAS TO BE UNIQUE.}
+
+
+\textcolor{red}{THIS UNIQUENESS I ALSO HAVE TO PROVE }
+
+For a better understanding, a different way of obtaining the velocity of the non redundant joints is used here. Clearly this new way yields the same results as using  (\ref{eq:ns_constraint}). After all it is a system with two degrees of freedom and by imposing the six constraints of the null space motion only one $\mathbf{\dot{q}}$ can result. But still is helpful to understand better this case.\textcolor{blue}{why is this crossed?? }
+
+\begin{figure}[!htb]
+	\centering	
+	\subfigure[]{\label{fig:gradients_weird_case}}{\includegraphics[height=0.45\textwidth]{images/gradients_weird_case.eps}} 	\subfigure[]{\label{fig:velocities_weird_case}}{\includegraphics[height=0.5\textwidth]{images/velocities_weird_case.eps}} 	 	
+	\caption{Fig.\ref{fig:gradients_weird_case}: Gradient of the reflected mass w.r.t. both redundant joints during the minimization. \\ Fig.\ref{fig:velocities_weird_case}: Normalized joint velocities before and after the minimum in a self-motion manifold is found. }
+	\label{fig:weird case}
+\end{figure}
+
+
+
+
+The $\dot{\mathbf{q}}$ is now determined as a linear combination of the unitary vectors that span the null space.
+
+
+The Jacobian matrix $\mathbf{J}$ can be decomposed via singular value decomposition \cite{svd} as follows
+\begin{equation}
+\mathbf{J}(\mathbf{q})=\mathbf{U}(\mathbf{q}) \mathbf{S}(\mathbf{q}) \mathbf{V}(\mathbf{q})
+\label{eq:svd}
+\end{equation}
+
+where the null space can be geometrically interpreted when considering 
+\begin{equation}
+\mathbf{V}(\mathbf{q})=(\mathbf{X}(\mathbf{q}),\mathbf{Y}(\mathbf{q}))
+\label{eq:4.32Dietrich}
+\end{equation}
+
+where the rows of $\mathbf{Y}(\mathbf{q})$ span the null space. In our case with a 8-DOF robot $\mathbf{Y}(\mathbf{q})$  is composed of the last two rows of $\mathbf{V}(\mathbf{q}) = [ \mathbf{v_1}, \dots , \mathbf{v_8}]$, namely $\mathbf{v_7}$ and $\mathbf{v_8}$. And like the null space has the properties of a vector space any linear combination of this two rows will result in a null space motion. 
+
+\begin{equation}
+\dot{q_1}  = C_1 v_7(1) + C_2 v_8(1) 
+\label{eq:}
+\end{equation}
+
+\begin{equation}
+\dot{q_4} = C_1 v_7(4) + C_2 v_8(4)
+\label{eq:}
+\end{equation}
+
+
+
+By solving this system of equations we calculate $C_1$ and $C_2$ and implement them in:
+
+\begin{equation}
+\dot{q} = C_1 v_7 + C_2 v_8 .
+\label{eq:}
+\end{equation}
+
+When the first gradient reaches the minimum \begin{equation}
+\dot{q_1}  = C_1 v_7(1) + C_2 v_8(1) = 0 .
+\label{eq:}
+\end{equation}
+
+Now let us assume  $v_8(1)$ is zero, which is possible as these values come from the SVD. Then, after normalizing the velocity, we obtain $\mathbf{\dot{q} =v_7 }$. This causes the normalized velocities to be constant in  \ref{fig:velocities_weird_case} after 114.45 s.
+
+A motion inside a self-motion manifold slice is equivalent to a motion of the 7-DOF LWR only. And for the 7-DOF LWR the analytical formula of the kernel of the Jacobian (\ref{eq:dq_ns}) depends only on the joint configuration.
+
+The conclusion is that setting a velocity proportional to the gradient, and later normalizing this velocity, is not strictly the GD method. Because the velocity of the third rotational joint depends only on the configuration of the robot. The descent direction is still correct but the step size will not be proportional to the change of the reflected mass w.r.t. this joint. 
+
+This only occurs when minimizing inside a self-motion manifold slice. And it does not mean that the minimum will not be found. It means that the velocity, at which it will be found, is not related to the gradient itself.
+
+A non-normalized velocity will be considered in  Chapter  \ref{ch:experiments}.
+
+%\begin{equation}
+%\ker(\vJ(\vq))  =\begin{pmatrix} -0.06084s_6 c_3 s_4^2\\
+%0. 6084s_6 s_4^2 s_3 s_2\\
+%0.00156s_4 s_6 (-40s_2)...\\
+%...-39s_2 c_4 +39c_2 c_3 s_4\\
+%0\\
+%-0.00156s_4 s_2 (-40c_4 s_6)+...\\
+%...40s_4 c_5 c_6 -39s_6\\
+%-0.06241s_6 s_4^2 s_2 s_5\\
+%0.0624s_4)^2 s_2 c_5	
+%\end{pmatrix}	.
+%\label{eq:dq_ns}
+%\end{equation}
+
+
+
+\subsubsection{Weighting}
+\label{subsubsec:weighting}
+
+In the numerical approach we are computing the gradient w.r.t. two joints and directly using it as the velocity of the redundant joints.
+
+The velocities of these two joints ($q_1$ and $q_4$) are proportional to these gradients. This allows us to weight the relation between both gradients, making it possible to reach a local minimum
+by moving for example only the linear axis or only the elbow. The units of both joints are different (the linear axis displacement is measured in meters and the elbow in radians) which allows us to weight the relation between them freely.
+
+
+The relation chosen to weight both joints is a linear one. So the new joint velocities are:The relation chosen to weight both joints is a linear one. The new joint velocities are:
+
+\begin{equation}
+\mathbf{\dot{q}_{1_{new}}}  = \mathbf{\dot{q_{1}}}WF.
+\end{equation} 
+\begin{equation}
+\mathbf{\dot{q}_{4_{new}} }= \mathbf{\dot{q_{4}}}(1-WF),
+\end{equation}
+
+
+where $WF \in [0,1]$, is the weighing factor variable.
+When $WF=1$ the motion will be done only by the linear axis minimization, and when $WF=0$ only by the elbow (see Fig.\ref{fig:wf}).
+
+For the  remaining experiments no weighting is considered, which can be regarded as a weighting factor of 0.5.
+
+\begin{figure}[!h]
+	\centering	
+	\subfigure[]{\label{fig:wf_1}}{\includegraphics[height=0.5\textwidth]{images/wf1.eps}} 	\subfigure[]{\label{fig:wf_0}}{\includegraphics[height=0.5\textwidth]{images/wf0.eps}} 	 	
+	\caption{Fig.\ref{fig:wf_1}: Minimization for weighting factor of 1 (only  linear axis motion). \\ Fig.\ref{fig:wf_0}: Minimization for weighting factor of 0 (only elbow motion). }
+	\label{fig:wf}
+\end{figure}
+
+In the analytical approach it is not possible to force the joint velocities as they mainly depend on the current reflected mass of the robot. Let us assume we want to impose  $\dot{q}(1) = \dot{q_r}(1) = 0$. By looking at  (\ref{eq:qr_jma}) one can
+see that it is necessary that
+
+\begin{equation}
+\mathbf{J_{ma}^{-1}}(\mathbf{q}) = [0 \ 	  *].
+\end{equation} 
+
+For sake of simplicity we will use the transpose of the Jacobian instead of the inverse in this demonstration. Then we demand
+
+
+\begin{equation}
+\mathbf{J_{ma}^{T}}(\mathbf{q}) = \left[ \frac{\partial {m_u(\mathbf{q})}}{\partial{\mathbf{q_{r}}}} + \frac{\partial {m_u(\mathbf{q})}}{\partial{\mathbf{q_{nr}}}}  (- \mathbf{J}_{nr}^{-1} \mathbf{J}_r) \right ]^{T}= [0 \ 	  *] ,
+\end{equation}
+
+Like $\frac{\partial {m_u(\mathbf{q})}}{\partial{\mathbf{q_{r}(1)}}} =0 $  we need to ensure that
+
+
+\begin{equation}
+\frac{\partial {m_u(\mathbf{q})}}{\partial{\mathbf{q_{nr}}}}\mathbf{J_{nr}}^{-1} \mathbf{J_{r}}= [0 \ 	  *]^{T}.
+\end{equation} 
+
+The matrices $\mathbf{J_{nr}}$ and $\mathbf{J_{r}}$ depend on the configuration of the robot, therefore the first row of  $[\mathbf{J_{nr}}^{-1} \mathbf{J_{r}}]$ cannot be forced \textcolor{blue}{why is this crossed?? } to be all zeros. 
+
+Finally concluding that the weighting is not possible with the analytical approach.\textcolor{blue}{why is this crossed?? }
+
+\textcolor{blue}{IS THIS DEMONSTRATION CLEAR?? }
+
+
+
+
+\subsubsection{Oscillations close to minimum}
+\label{subsubsec:zigzag}
+
+
+A problem that comes up when using GD is the zigzagging: In a curved flat valley the optimization algorithm may zigzag slowly towards the minimum. {\color{red} esto desarrollarlo un poco mas o incluso poner animacion}
+
+Using a normalized velocity, oscillations close to the minimum are observed as well. 
+
+%These oscillations are observed testing the algorithm in the grid. Without yet being implemented in the controller.\textcolor{blue}{why is this crossed?? }
+
+To solve this, the first attempt is decreasing the fixed step size. But in order to get rid of the zigzag it has to be too decreased and the motion is too slow.
+
+
+Secondly, other minimization strategies are considered. Methods like the Conjugate Gradient descent add a friction term in each iteration: Each step depends on the two last values of the gradient and sharp turns are reduced. This and other minimization strategies are reviewed in the next section.
+
+
+
+
+
+
+ 
+
+
+\section{Other methods}
+\label{sec:othermethods}
+
+\subsection{Conjugated gradient descent}
+\label{subsec:CJD}
+
+{\color{red} añadir con mas detalle mirando la web y mi cuaderno de vitacora} 
+
+
+While in the gradiet descent method the descent direction was chosen as 
+
+\begin{equation}
+d_k = -g_k ,
+\end{equation} 
+
+for each iteration $k$, in the conjugate gradient descent (CJD) the direction is
+
+\begin{equation}
+d_k = -g_k + \beta_k d_{k-1},
+\end{equation}
+
+where $g_k$ is the gradient at the $kth$ iteration. These methods add a frictional term $\beta_k$ to avoid sharp turns when getting into a (ill-conditioned) narrow valley. This avoids the criss-cross pattern (zigzag) shown by the standard gradient descent.
+
+In the literature there are many variations of the CJD. Being the most known \textcolor{blue}{why is this crossed?? } the methods from Polak-Ribere \cite{polak},  Hestenes-Stiefel \cite{hestenes} and Dai-Yuan \cite{dai}. Each of this authors propose a different formulation for $\beta_k$. Which has to be chosen so the directions of $d_{k}$ and $d_{k-1}$ are conjugate w.r.t. the Hessian of the object function.
+
+Following CGD methods are implemented in this thesis:
+
+\begin{itemize}
+	\item Polak-Ribiere
+	
+	\begin{equation}
+	\beta_k = \frac{ g_k^{T} (g_k - g_{k-1})}{ g_{k-1}^{T} g_{k-1}}	.
+	\end{equation}
+	
+	\item Hestenes-Stiefel
+	
+	\begin{equation}
+	\beta_k = - \frac{ g_k^{T} (g_k - g_{k-1})}{d_{k-1} (g_k - g_{k-1})}	.
+	\end{equation}	
+	
+	\item Dai-Yuan
+	
+	\begin{equation}
+	\beta_k =- \frac{ g_k^{T} g_k }{d_{k-1} (g_k - g_{k-1})}		.
+	\end{equation}
+	
+	
+\end{itemize}
+
+
+
+
+
+%A problem encountered when implementing these formulas is that if the step size is small the narrow valley can be too narrow. 
+
+A problem encountered when implementing these approaches is that these frictional terms have more weight than the gradient. This term becomes too large when it approaches the minima causing the optimization not to converge. A better approach could be the use of direct methods, like Golden Search method, as suggested in \cite{CGD_converge} but the review of these methods is out of the scope of this thesis.
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Newton methods}
+\label{subsec:newton}
+
+These methods are as extended as the GD and CGD\textcolor{blue}{why is this crossed?? }. And compared to the previous ones, the Newton methods tend to converge in fewer iterations. Although each iteration usually requires more computation than  in GD or CGD. This is because the second derivatives of the cost function (Hessian) are computed in each step. 
+
+The main idea of these methods is to find a second order approximation (via Taylor series) to find the minimum of a function $\mathbf{f(x)}$.
+
+
+\begin{equation}
+\mathbf{f(x_k + \Delta x) }\approx \mathbf{f(x_k) } + \mathbf{\nabla f(x_k)^{T} }\mathbf{\Delta x} + \frac{1}{2} \mathbf{\Delta x^{T} }\mathbf{H_k} \mathbf{\Delta x},
+\end{equation}
+
+where $\mathbf{H_k}$ is the Hessian matrix.
+ 
+A requirement for these methods is a twice differentiable function. 
+As we only have an approximation of the inverse of the Hessian, because we only have an approximation of the first order derivative the Quasi Newton's method result of more interest.
+
+
+\subsection{Quasi-Newton methods}
+\label{subsec:quasinewton}
+
+\textcolor{red}{I HAVE TO REVIEW MY NOTES FROM THE NOTEBOOK IN GENERAL TO SEE IF I AM MISSING SOMETHING	}
+ 
+These methods are based on the approximation of the inverse of the Hessian:
+
+\begin{equation}
+\mathbf{B_k} \approx \mathbf{H_k}^{-1}. 
+\end{equation}
+
+The gradient is updated such that
+
+\begin{equation}
+\mathbf{\nabla f(x_k + \Delta x)} = \mathbf{\nabla f(x_k) + \mathbf{B_k}\mathbf{ \Delta x }} 
+\end{equation}
+
+
+
+The Quasi-Newton (QN) methods do not require a computation of the Hessian in each iteration, but this one is updated instead.Therefore they are implementable in this work.
+For this approximation two formulas are considered, namely: Davidon–
+Fletcher–Powell (DFP) \cite{DFP}, and a later update of this formula named Broyden– Fletcher– Goldfarb– Shanno (BFGS)\cite{BFGS}:
+
+\begin{itemize}
+	\item DFP
+	
+	\begin{equation}
+	 \mathbf{B_{k+1}^{DFP}} =  \mathbf{B_k} + 	\frac{\mathbf{\Delta x}   \mathbf{\Delta x^{T}}}		
+	 {\mathbf{\Delta g^{T}}  \mathbf{\Delta x}  } -  \frac{(\mathbf{B_{k}}^{T}  \mathbf{\Delta g}) (\mathbf{B_{k}}^{T}  \mathbf{\Delta g})^{T}  }
+	 {\mathbf{\Delta g^{T}} (\mathbf{B_{k}}^{T}  \mathbf{\Delta g})   },
+	 \label{eq:DFP}
+	\end{equation}
+	
+	where $\mathbf{\Delta g} = \mathbf{g_{k+1} }- \mathbf{g_k} $.
+	
+	\item BFGS
+	
+	\begin{equation}
+	\mathbf{B_{k+1}^{BFGS}} =  \mathbf{B_{k+1}^{DFP}} + \mathbf{\Delta g^{T}}(\mathbf{B_{k}}^{T}  \mathbf{\Delta g})(\mathbf{u}  \mathbf{u^{T}})	,
+	\end{equation}	
+	
+	where $\mathbf{u} = \frac{\mathbf{\Delta x}}		
+	{\mathbf{\Delta g^{T}}  \mathbf{\Delta x}} - \frac{(\mathbf{B_{k}}^{T}  \mathbf{\Delta g})   }
+	{\mathbf{\Delta g^{T}} (\mathbf{B_{k}}^{T}  \mathbf{\Delta g})   }$.
+	
+
+\end{itemize}
+
+
+\subsubsection{Loss of positive definiteness}
+\label{subsubsec:loss_pdness}
+
+When implementing these formulas, a problem that occurs is the loss of positive definiteness. Numerical calculations, inexact line search and round-off and truncation errors can cause loss of positive definiteness. To ensure stable and convergent behavior, some safeguards must be taken. 
+Using QN methods for positive definite quadratic functions, the convergence converge is guaranteed to an exact optimum in at most $n$ iterations, where $n$ is the number of variables (two in our case).
+However, with general cost functions this is not the case and the methods need to be restarted   \cite{intro_opt_design}.
+
+
+In our case the grid (cost function) is generally not a quadratic function therefore round-off and truncation errors may occur. 
+Regarding line search: a key property of the BFGS and DFP updates is that the approximated inverses of the Hessian are positive definite. This will only happen if the step size is chosen to satisfy the Wolfe conditions for each $k$ iteration:
+
+
+\begin{itemize}
+	\item Armijo rule
+	
+	\begin{equation}
+	f(x_k +  \alpha_k p_k) \le f(x_k) + c_1 \alpha_k \nabla f_k^{T} p_k ,
+ 	\end{equation}
+	
+	where $\alpha_k $ is the step size, $p_k$ is the descent direction, and $c_1$ is a constant to be chosen.
+	
+	\item Curvature condition
+	
+	\begin{equation}
+	\nabla f(x_k + \alpha_k p_k)^{T} \ge  c_2 \nabla f_k^{T} p_k  ,
+	\end{equation}	
+	
+	where $c_2$ is another constant and both constants have to be chosen such that $ 0 < c_1 < c_2 < 1 $.
+	
+	
+\end{itemize}
+
+
+
+
+
+As we are normalizing the velocity, the step size includes a division by the norm of the joint velocities. This step size can be escalated but it is going to be variable because the velocity changes in each iteration. Therefore as well the norm of the velocity. 	\textcolor{blue}{why is this crossed?? }
+
+The Wolfe conditions are therefore tested.  These tests are performed with the most commonly used values of $c_1$ and $c_2$ proposed by Nocedal \cite{Nocedal2006NO}.
+As expected during the tests
+the variable step size ends up violating these conditions. This causes inexact line search and according to \cite{intro_opt_design} the positive definiteness is lost. This loss comes from an inexact line search, because the search direction is guaranteed to be that of descent for the cost function only if the approximated of the Hessian is positive definite.
+
+\section{Comparisons and conclusions}
+\label{sec:comparison_local_minim}
+
+
+\textbf{\textcolor{blue}{I ALSO HAVE TO MENTION SOMEWHERE THAT THE GD CANNOT BE APPLIED IN \ref{sec:Nicostuff} IF THE VELOCITY IS NORMALIZED. BECAUSE FOR CONSTANT  q1 THE GRADIENT IS NOT GOING TO BE PROPORTIONAL TO THE VELOCITY.} \\  \\ 
+\textcolor{blue}{THIS IS ONLY TRUE IF THE NULL SPACE VELOCITY IS UNIQUE FOR THE 7-DOF LWR} \textcolor{red}{....I HAVE TO PROVE THAT IT IS UNIQUE}}
+
+
+\subsection{Comparison between projected and reduced gradient}
+\textcolor{red}{The main reason not to chose the projected minimization from Section (I STILL DONT HAVE THE SECTION WHERE THE PROJECT GRADIENT IS USED FOR THE VELOCITY)  is that it involves  pseudoinversion of the robot Jacobian and projection in its null-space. Therefore this technique is more computationally intensive than using the reduced gradient and imposing the null space constraint by \ref{eq:ns_constraint}}
+
+
+
+ \subsection{Comparison of the local minimization methods}
+ \label{subsec:compare_local_minim_methods}
+ 
+ 
+% Please add the following required packages to your document preamble:
+% \usepackage{multirow}
+% \usepackage{graphicx}
+% \usepackage[table,xcdraw]{xcolor}
+% If you use beamer only pass "xcolor=table" option, i.e. \documentclass[xcolor=table]{beamer}
+\begin{table}[!h]
+	\centering
+	\caption{Comparison line search methods}
+	\label{table:comp_ls_methods}
+	\resizebox{\textwidth}{!}{%
+		\begin{tabular}{|c|c|c|c|c|c|c|c|}
+			\hline
+			&                                      & \multicolumn{2}{c|}{\textbf{GD}}                             & \multicolumn{2}{c|}{\textbf{DFP}}                            & \multicolumn{2}{c|}{\textbf{BFGS}}                           \\ \cline{3-8} 
+			\multirow{-2}{*}{\textbf{Initial configuration}} & \multirow{-2}{*}{\textbf{Direction}} & \textbf{Ending reason} & \textbf{n}                          & \textbf{Ending reason} & \textbf{n}                          & \textbf{Ending reason} & \textbf{n}                          \\ \hline
+			A                                                & x                                    & 3 zigzags              & 94                                  & 3 zigzags              & 81                                  & 3 zigzags              & \cellcolor[HTML]{34FF34}\textbf{77} \\ \hline
+			B                                                & x                                    & 3 zigzags              & 88                                  & CJL                    & 68                                  & 2 zigzags              & \cellcolor[HTML]{34FF34}\textbf{69} \\ \hline
+			C                                                & z                                    & 2 zigzags              & \cellcolor[HTML]{34FF34}\textbf{30} & 2 zigzags              & \cellcolor[HTML]{34FF34}\textbf{30} & 2 zigzags              & 32                                  \\ \hline
+			D                                                & z                                    & 2 zigzags              & 30                                  & 2 zigzags              & 27                                  & minim. found           & 23                                  \\ \hline
+			E                                                & y                                    & minim. found           & \cellcolor[HTML]{34FF34}\textbf{32} & minim. found           & 38                                  & minim. found           & 38                                  \\ \hline
+			F                                                & y                                    & minim. found           & 37                                  & minim. found           & \cellcolor[HTML]{34FF34}\textbf{23} & 2 zigzags              & \cellcolor[HTML]{34FF34}\textbf{23} \\ \hline
+			
+			
+			\multicolumn{8}{l}{\textbf{GD}: Gradient Descent}\\
+			\multicolumn{8}{l}{\textbf{DFP}: Davidon–Fletcher–Powell}\\
+			\multicolumn{8}{l}{\textbf{BFGS}: Broyden–Fletcher–Goldfarb–Shanno}\\
+			\multicolumn{8}{l}{\textbf{Ending reason}: zigzags before sum of both gradients below threshold (0.1)}\\
+			\multicolumn{8}{l}{\textbf{CJL}: Conservative Joint Limits reached}\\
+		\end{tabular}%
+			} 
+\end{table}
+
+
+In Tab.\ref{table:comp_ls_methods} the results of tests for different initial configurations and different reflected directions are listed. There is a comparison of the GD and both QN methods. As already mentioned CGD methods lead to worse convergence than GD, and the Trust region methods and the Newton methods are not implementable.
+
+The tested cases were chosen so the initial configuration is relatively far from the minimum, because close to a minimum all methods perform the same.\textcolor{blue}{why is this crossed?? }
+
+The QN methods, and in particular BFGS, are in general faster than GD. But the difference is not significant. Theoretically the convergence should be much faster but the need to restart them often, as explained in the Section \ref{subsubsec:loss_pdness}, causes the convergence rate to decrease. Being for some cases the GD approach slightly faster.
+
+If zigzagging is present the Algorithm \ref{alg:2D_alg} (see line \ref{2D_alg:line:zigzag}) stops when the gradient is smaller than a certain convergence parameter. In one case, one of the methods (DFP) reached the joint limits and it stopped. But no method is more prone to reach joint limits. For all this, and for sake of simplicity, the GD method is the one chosen to be implemented in the controller.
+
+
+
+
+With all the methods, when there is zigzagging, it always starts happening close to the desired local minimum. And the gradient is close to zero after a few iterations, so the improvement
+between finding the desired local minimum and being below the convergence threshold is insignificant. Therefore this is not a criterion to decide between the methods,
+because for the tested grids the threshold used (0.1) \textcolor{blue}{symbol?? } ensures proximity to the minimum.
+
+Nevertheless, this threshold has been set from the experiments here performed \textcolor{blue}{why is this crossed?? }. None of the grids ever showed minima, in which vicinity the gradient changed abruptly. But it is not ensured that they do not exist for specific configurations. If existing it would be a problem because the oscillations could occur for a higher threshold than the one tested here. To improve this the oscillations may also be decreased when implementing the algorithm inside the
+controller. 
+
+The controller commands a goal position after a certain number of iterations. If the algorithm detects zigzag while iterating, the maximum number of iterations (also in the algorithm's line \ref{2D_alg:line:zigzag} ) is increased so a position closer to the minimum is selected.\textcolor{blue}{is this unclear?? }
+
+
+
+
+
+
+
+
+
+
+ 
+ \subsection{Global vs local minimization}
+ \label{subsec:compare_globalvslocal}
+ 
+Local minimization allows us  allow us to have a real-time capable controller
+
+
+
+
+
+
+
+
+
+ 

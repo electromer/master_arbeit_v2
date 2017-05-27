@@ -1,0 +1,136 @@
+\chapter{Global Optimization}
+\label{ch:globaloptimization}
+
+
+From \cite{fabianthesis} we already have the null space positions as a point cloud. This numerically obtained dataset is used as input in Section \ref{sec:global_numerical} for an algorithm that returns the local and global extrema of the grid. However, an analytical form of the grid is of interest. Therefore the Section \ref{sec:global_analytical} is dedicated to obtain an analytical form  of this null space grid.
+
+
+
+
+\section{Analytically}
+\label{sec:global_analytical}
+
+
+
+%\subsection{Imposing the null space constraint in the reflected mass}
+\label{subsec:imposing_ns_constraint}
+
+
+The goal is to reformulate $m_u$, so it does include the null space constraint. 
+For sake of simplicity the problem is explained for the 7-DOF LWR.  We aim to get $m_u(\mathbf{q}_{ns})$ where $\mathbf{q}_{ns}$ is
+
+
+\begin{equation}
+\mathbf{q}_{ns}(t) = \int_{t_0}^t \! \ker(\mathbf{J}(\mathbf{q}(\tau))) \, \mathrm{d}\tau. 
+\label{eq:integral_kernel}
+\end{equation}
+
+For the 7-DOF LWR the analytical formula of the kernel of the Jacobian is:
+
+\begin{equation}
+\ker(\mathbf{J}(\mathbf{q}))  =\begin{pmatrix} -0.06084s_6 c_3 s_4^2\\
+0. 6084s_6 s_4^2 s_3 s_2\\
+0.00156s_4 s_6 (-40s_2)...\\
+...-39s_2 c_4 +39c_2 c_3 s_4\\
+0\\
+-0.00156s_4 s_2 (-40c_4 s_6)+...\\
+...40s_4 c_5 c_6 -39s_6\\
+-0.06241s_6 s_4^2 s_2 s_5\\
+0.0624s_4)^2 s_2 c_5	
+\end{pmatrix}	,
+\label{eq:dq_ns}
+\end{equation}
+
+
+where $s_i$ and $c_i$ are respectively the sinus and cosine of the $q_i$ joint. For this kernel of the Jacobian, the integral of the equation (\ref{eq:integral_kernel}) is analytically not solvable with software like Maple or Mathematica. So we cannot obtain a closed-form of the reflected mass, such that the null space constraint is imposed. \textcolor{blue}{Another way may be obtaining the anti-derivatives of the entries of (\ref{eq:dq_ns}). Let us take the last term of the fifth entry, $s_6$. From the numerical integration done in  \cite{fabianthesis} it is known that the sixth rotational joint takes the form of a sinus. Therefore this term can be rewriten as $\mathrm{sin(sin(x))}$.  This function is Riemann integrable, but this does not mean that a closed-form of the integral exists. \\
+Unfortunately $\mathrm{sin(sin(x))}$ has most likely no antiderivative. It can only be evaluated in specific intervals, for which tables, like the ones in \cite{hanbook_math}, provide a result depending on Struve and Bessel functions \cite{struve}. In the intervals where the integral cannot be evaluated, it may be representable as "incomplete" Struve and Bessel functions, which nowadays may only be approximately computed using special algorithms \cite{incomplete_bessel}. One may argue if these solutions for the definite integral are closed-form or not. In general a solution is said to be "closed-form" if it can be expressed analytically in terms of some "well-known" functions \cite{def_closed_form},  and nowadays not all the authors accept "incomplete" Struve functions as closed-form.  \\
+Software like Mathematica compute elementary antiderivatives using approaches like the Risch algorithm \cite{risch}, which attempts to prove Liouville's theorem \cite{lioville} for the existence of antiderivatives as rational functions.  An explicit proof of the non-existence of this antiderivative  by hand is left to future work.}
+
+\textcolor{red}{The closed-form does not exist (they are incomplete Struve functions for which different approaches exist to compute the integral, but no closed form till today) for every interval. And like the robot should be able to move the joints in any possible interval...does it mean that it is not interesting??}
+
+
+
+
+
+For our case with the 8-DOF robot, an attempt is done using curve fitting. If successful, this would generate a function, from this point cloud, that could be used as an input to the solvers provided by MATLAB Optimization Toolbox. But the attempts performed result always in a function that leads to a very different surface from the original  set of possible null space positions. The difficulty increases when the robot is following a trajectory because the surface changes with the direction of the end-effector. Being this approach discarded, one needs to work with numerical values. 
+
+
+
+
+
+\section{Numerically}
+\label{sec:global_numerical}
+
+
+In general the minimization must be performed while the robot is following a trajectory. Knowing the trajectory a priori may allow the computation of the null space grids for the different configurations, and directions of the end-effector, during the motion. This implies that the computation of these grids and the search of the global minima must be offline. For a general trajectory, the time taken to compute the grids, precludes from online capabilities.\\
+%
+Another problem that may be solved offline, is the computation of the path to the minimum. This is necessary because the robot may go through local peaks of maximum reflected mass, on his trajectory to the global minimum. This may be solved with path optimization techniques, out of the scope of this work. 
+
+%
+One way to see the numerical values of the grid is as image-points of a picture. Where the third coordinate of each point represents a property of the image at that point, like for example the color. From this point of view the dataset, that is the point cloud, may be treated with tools from the MATLAB Image Processing Toolbox. These can be used to write an algorithm that finds the minima in the data set. Unfortunately the DLR does not have a license for such a Toolbox so other implementation is necessary.
+Without making use of this Toolbox a filter \cite{minmaxfilter} to find the local maxima and minima from a given dataset is used. This filter computes the maxima and minima over running windows of a determined size. The concept “\textit{window}” here refers to the image-processing domain. Given a pixel value at a point \textit{(x,y)} the window limits an area (usually squared) around the pixel, where the extreme local values are searched. The \textit{pixel} is in our case  the value of the reflected mass.
+
+
+In the filter, the sliding window can be a scalar (in which case the same window size will be scanned for all dimensions) or an array (in which case separate scan sizes will be run for each dimension). The advantage of this filter is that it can do multidimensional filtering. Here the signal is two dimensional, i.e. with two independent variables $q_1$ and $q_4$. Therefore the window-size should have two entries (or 1 if one wants unidimensional filtering).
+
+
+Here, two examples are explained for better understanding:
+\begin{enumerate}
+	\item In the first case (Fig. \ref{fig:maxminfilter1}) the window size is set to $[dim_{max_{1}}, \ 1]$. The local minimum is found in each self-motion manifold slice, for constant positions of the elbow.
+	\item In the second case (Fig. \ref{fig:maxminfilter2}) the window size is set to $[1, \ dim_{max_{2}}]$. The local minimum is found in each self-motion manifold slice, for constant positions of the linear axis.
+
+\end{enumerate}
+
+Where $dim_{max_{i}}$ is the data length of the $ith$ dimension. It is clear to see that when setting both dimensions to their relative maximim values, $[dim_{max_{1}}, \ dim_{max_{2}}]$, only the global extrema are found.
+
+\textcolor{red}{INCREASE THE FONT OF THE TITTLE AND AXIS}
+
+\begin{figure}[htb]
+	\centerline{
+		\includegraphics[width=1\textwidth]{images/global_q4_cte_v2.eps}}
+	\caption{Plot of the reflected mass in x direction against the self-motion
+		manifold coordinates. Local minima found in each self-motion manifold slice for each elbow position. }
+	\label{fig:maxminfilter1}
+\end{figure}
+
+\begin{figure}[htb]
+	\centerline{
+		\includegraphics[width=1.0\textwidth]{images/global_q1_cte_v2.eps}}
+	\caption{Plot of the reflected mass in x direction against the self-motion
+		manifold coordinates. Local minima found in each self-motion manifold slice for each linear axis position. }
+	\label{fig:maxminfilter2}
+\end{figure}
+
+
+
+
+
+\subsection{The algorithm}
+\label{subsec:global_alg}
+
+The filter is based on a \textit{Monotonic Wedge} algorithm \cite{Lemire}.
+A simpler algorithm is the \textit{Max Queue} algorithm. In this last one, there is a queue with a fixed capacity and values are pushed into it. When a value is pushed another one is pulled. The values are continuously pushed while the maximum from the queue is written in a results-row.
+It uses the separability of the problem.  For example in a two dimensional grid, it goes through all the rows and then through all the columns, making it two separate one dimensional problems.
+
+Although intuitive and easy to implement it does not work that well with pseudo-monotonic data. The null space motion grids of the reflected mass may be divided into pseudo monotonic areas. The \textit{Monotonic Wedge} algorithm performs better in these cases, therefore this algorithm is preferred to implement here. This algorithm also ensures that new maximums are quickly found when moving out of the window. However, as we are optimizing offline this is not a defining advantage.
+%Although the speed is not a relevant factor as we are treating the data offline.
+
+%Like before the values of the reflected mass are being pushed and pulled. But instead of searching the elements through the whole window the algorithm just takes the next element from the wedge.
+
+%\underline{Short introduction to wedges:} Let \textbf{$U_i$}  be a monotonic wedge of the sequence \textbf{$A_i$} . Then \textbf{$U_i$}  has the following properties:
+
+%\textbf{$U_0$} is the index of the maximum element of \textbf{$A_{U_0}$} ,
+
+%U1  is the largest element of all elements to the right of \textbf{$A_{U_0}$} .
+%In general, \textbf{$U_k$}  is the largest element of all elements to the right of \textbf{$A_{U_{k-1}}$}.
+%{\color{red} add more explanation and references about this?? if needed see more explanation and other 2D approaches in the pdf minmaxfilters.pdf. IT WOULD BE INTERESTING COMPARING THE OTHER APPROACHES AND SAYING WHY I DECIDED FOR THIS ONE!!!!}
+
+%The advantage of this algorithm is mainly the speed {\color{red} FIND A BETTER ADVANTAGE because if this approach is only for offline optimization actually it does not important that much the speed!! }  because it requires, in the worst case, 3 comparisons per element.
+
+The standard way to find the minima of a given grid is with sliding windows of small length in both dimensions. A more accurate way is: First finding all the minima for the self-motion manifold slice, corresponding to each position of the elbow (see Fig.\ref{fig:maxminfilter1}). Secondly doing an equivalent minimization for each position of the linear axis (see Fig.\ref{fig:maxminfilter2}). 
+And finally get the common minima from both sets. This strategy was implemented, and performs better than the mentioned standard way, in all tested scenarios. 
+
+\subsection{Continuity of the global minimum}
+
+A requirement for the goal position is its continuity. While following a trajectory the different joint configurations lead to different grids. As long as the direction does not change abruptly (and this is the case considered in this work), the minimum shows continuity. In the sense that every computed global minimum does not lay far from the previous one. An exception occurs when the grid shows contour lines. If contour lines exist, where local minima lay. And the global minimum is in this contour line. Due to small computational errors where computing the grid, the global minimum suffer of discontinuity. In the tests run, when the robot is performing a null space motion, the global minimum is computed in different points of the contour line. Meaning that the global minimum is prone to discontinuities. This makes the global minimum an undesired goal position.
+It is also worth mentioning that in y- and z- direction the grid shows in all the tested scenarios contour lines where the global minimum is included. Meaning that in these directions local minimization provides as good results, in terms of optimization, as the global minimization. 

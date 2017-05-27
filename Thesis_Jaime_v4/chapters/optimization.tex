@@ -1,0 +1,208 @@
+\chapter{Optimization}
+\label{section:optimization}
+
+{\color{red} here small intro about optimization }
+The problem here is finding the robot configurations where the reflected mass on the tip of the robot in certain direction is minimal. For that there are 2 approaches:
+
+
+\begin{enumerate}
+	\item determine all possible null space positions and then find the local minima and global minimum numerically (Global optimization)
+	\item or try an iterative solution (Local optimization).
+\end{enumerate}
+
+
+
+
+\section{Global optimization}
+
+For the first approach a grid with all the null space positions of the robot for a given initial configuration of the joints was already obtained in previous work on this same robot \cite{fabianthesis}  
+These positions come as a point cloud where the axes of the coordinate system are the positions of the linear axis and third rotational joint {\color{red}explain why these joints are chosen-> Fabian’s Thesis} and the z-axis is the reflected mass. Having this data in MATLAB the first logical way to determine the minima is making use of MATLAB Optimization Toolbox  {\color{red} add reference?? }. All tools provided by MATLAB take as an input an analytical form of the function, so in order to start making use of them an analytical form of this null space grid with the reflected masses is necessary.
+
+
+
+\subsection{Analytically}
+
+Previous work in the 7-DOF LWR  {\color{red}mention somehow Christian Ott} addressed the problem of solving the integral of the kernel of the Jacobian of this robot which would provide all possible null space positions. The conclusion of this work was that most likely no analytic solution exits, so one needs to work with numerical values. 
+For our case with the 8-DOF robot an attempt has been done at the beginning of the work in this thesis using curve fitting  {\color{red}mention MATLAB curve fitting toolbox??} to generate a function, from this point cloud, that could be used as an input to the solvers provided by MATLAB Optimization Toolbox {\color{red} add reference?? } but the tests carried out gave always as a result a function that lead to a very different surface from the original grid, so this approach was discarded, choosing to work with numerical values.
+
+
+
+%TODO: all what is in red
+
+\subsection{Numerically}
+One way to see these numerical values in a 3-coordinates' system is like if they were image-points of a picture, where the third coordinate of each point represents a property of the image at that point, like for example the color. From this point of view the dataset that is the point cloud can be treated with tools from the MATLAB Image Processing Toolbox {\color{red} add reference?? } to write an algorithm that finds the minima in the data set. Unfortunately the DLR does not have a license for such a Toolbox so other implementation is necessary.
+Without making use of this Toolbox a filter \cite{minmaxfilter} to find the local maxima and minima from a given dataset is used. This filter computes the maxima and minima over running windows of a determined size. The concept “window” here refers to the image-processing domain. Given a pixel value at a point (x,y) the window limits an area (usually squared) around the pixel, where the extreme local values are searched.
+
+\subsubsection{About the filter}
+In the filter, the sliding window can be a scalar (in which case the same window size will be scanned for all dimensions) or an array (in which case separate scan sizes will be run for each dimension). The advantage of this filter is that it can do multidimensional min/max filtering. In our case, we have a 2D signal, i.e. with 2 independent variables, therefore when calling the min/max filter, the array for the window-size should have 2 columns (or 1 if one wants unidimensional filtering), but obviously more in our case does not make a difference.
+These 2 dimensions are q1 and q4. This can be seen better when running some tests on the null space grid.
+
+Here, 2 examples are explained for better understanding:
+\begin{enumerate}
+	\item In the first case \ref{fig:maxminfilter1} the window size is set to [100 1] the minimization is done through self-motion-manifold-slices for constant values of q4.
+	\item In the second case \ref{fig:maxminfilter2} the window size is set to [1 100] so the minimization is done through self-motion-manifold-slices for constant values of q1.
+
+\end{enumerate}
+
+It is clear to see that when setting both dimensions to 100, maximum value, only the global minimum/maximum is found.
+
+\begin{figure}[htb]
+	\centerline{
+		\includegraphics[width=1.0\textwidth]{images/maxminfilter1.png}}
+	\caption{Plot of the reflected mass in y direction against the self-motion
+		manifold coordinates. Local minima found over running windows of size [100 1]}
+	\label{fig:maxminfilter1}
+\end{figure}
+
+\begin{figure}[htb]
+	\centerline{
+		\includegraphics[width=1.0\textwidth]{images/maxminfilter2.png}}
+	\caption{Plot of the reflected mass in y direction against the self-motion
+		manifold coordinates. Local minima found over running windows of size [1 100]}
+	\label{fig:maxminfilter1}
+\end{figure}
+
+It is clear to see that when setting both dimensions to 100, maximum value, only the global minimum/maximum is found. {\color{red} wtf is 100? 100 is the maximum size for one dimension of the running window? so what happens if there are more points in one self-motion-manifold than 100???}
+
+
+
+\subsubsection{About the algorithm}
+The filter \cite{minmaxfilter} is based in a Monotonic Wedge algorithm \cite{Lemire}.
+A simpler algorithm is the Max Queue algorithm, in which one has a queue with a fixed capacity and values (pixels in image processing) are pushed into it (when a value is pushed another one is pulled). And it supports a max() operation. The pixels are continuously pushed while the maximum from the queue is written in a results-row.
+It uses the separability of the problem, so for example in a 2D grid, it goes through all the rows and then after all the columns, making it 2 separate 1D problems.
+
+Although intuitive and easy to implement it does not work that well with pseudo-monotonic data, and our grids could be divided into pseudo monotonic areas. The Monotonic Wedge algorithm performs better in these cases and also ensures we can find new maximums quickly when they move out of the window. As before we push and pull pixels, but instead of searching the elements through the whole window we just take the next element from the wedge.
+
+\underline{Short introduction to wedges:} Let \textbf{$U_i$}  be a monotonic wedge of the sequence \textbf{$A_i$} . Then \textbf{$U_i$}  has the following
+properties:
+
+\textbf{$U_0$} is the index of the maximum element of \textbf{$A_{U_0}$} ,
+
+U1  is the largest element of all elements to the right of \textbf{$A_{U_0}$} .
+In general, \textbf{$U_k$}  is the largest element of all elements to the right of \textbf{$A_{U_{k-1}}$}.
+{\color{red} add more explanation and references about this?? if needed see more explanation and other 2D approaches in the pdf minmaxfilters.pdf. IT WOULD BE INTERESTING COMPARING THE OTHER APPROACHES AND SAYING WHY I DECIDED FOR THIS ONE!!!!}
+
+The advantage of this algorithm is mainly the speed {\color{red} FIND A BETTER ADVANTAGE because if this approach is only for offline optimization actually it does not important that much the speed!! }  because it requires, in the worst case, 3 comparisons per element. One way to find the minima of a given grid is set the size of the sliding windows in both dimensions to 3, but a more accurate way to find more minima would be to find all the minima setting the windows' size to [1 100] and later finding the minima setting the windows' size to [100 1] (as done in the examples in previous pictures \ref{fig:maxminfilter1} \ref{fig:maxminfilter2}) and then get the common points who have same (or very close) values in both sets of minima. This works fine for most of the configurations but problems come up when the null space grid showed isocontour lines. In cases where isocontour lines appear the continuity of the minima is not guaranteed and some areas could not be considered:
+
+\begin{enumerate}
+	\item Continuity: Some tests were run where the robot was moving inside its null space {\color{red}for this there are videos} and here one can see that the if the null space has local minima in an isocontour line and there are symmetric global minima laying in this line, due to small computational errors (which come from slight inaccuracies in the points when calculating the point cloud) it can be that only one of these minima is considered the global minimum in some iterations and other symmetric minimum is considered the global minimum in other iterations, which means that the global minimum is prone to discontinuities.
+	\item Not considered areas: With this method (finding all minima for q1 constant, then for q4 constant and getting the common values) the minima inside the red-circles-area would not be found.\ref{fig:notconsideredareas}  {\color{red}TODO: xo no muxa prioridad xq se pued qdar simplemnt fuera d mi tfm}
+\end{enumerate}
+
+\begin{figure}[htb]
+	\centerline{
+		\includegraphics[width=1.0\textwidth]{images/notconsideredareas.png}}
+	\caption{fuck up}
+	\label{fig:notconsideredareas}
+\end{figure}
+
+
+\section{Local optimization}
+
+{\color{red} POR AQUI COPIANDO DEL .ODT}
+
+Now the possible methods to compute the descent direction will be treated.
+
+\subsection{Gradient Descent}
+
+Gradient descent method (GD) or Steepest descent comes natural as the first idea to minimize the reflected mass. The underlaying idea here is to project the gradient of the reflected mass via null space projector:
+
+\begin{equation}
+\mathbf{\tau_\mathrm{d}} = \mathbf{\tau_\mathrm{imp}} - k (I - J^T J^{\#T}) \nabla m_u(\mathbf{q}), \label{eq:gradient_controller}
+\end{equation}\textsl{\textsl{\begin{equation}
+\mathbf{\tau_\mathrm{d}} = \mathbf{\tau_\mathrm{imp}} - k N(q) \nabla m_u(\mathbf{q}), \label{eq:gradient_controller}
+\end{equation}\textsl{}}}
+
+where $\tau_d$ is the desired torque in the joints,
+$\tau_\mathrm{imp}$ is the desired torque of the impedance controller,
+$k$ is a scaling factor,
+$ N(q)$ is the null space projector \ref{section:nsprojection}
+and $\nabla m_u(q)$ is the gradient of the reflected mass.
+
+\subsubsection{Gradient of the reflected mass}
+An implementation of this method for the LWR only was done at DLR, {\color{red} has Nico any paper he wants to be mentioned?} where the minimization was done in a one dimensional null space. 
+The gradient is given by
+
+
+
+\begin{equation}
+\nabla m_u(\mathbf{q}) = 
+\frac{\partial {m_u(\mathbf{q})}}{\partial {q_i}} = \frac{\partial {[\mathbf{u^T} \Lambda_{v}^{-1}(\mathbf{q}) \mathbf{u}]^{-1}}}{\partial {q_i}}, \label{eq:grad_refl_mass_1}
+\end{equation}
+where $i = 1, \dots, 7$. This equation can be rewritten as
+\begin{equation}
+\nabla m_u(\mathbf{q}) = - \left [ \mathbf{u^T} \frac{\partial {\Lambda_{v}^{-1}}}{\partial {q_i}} \mathbf{u} +
+\frac{\partial {(\mathbf{u^T} \Lambda_{v}^{-1} \mathbf{u})}}{\mathbf{u}} \frac{\partial {\mathbf{u}}}{\partial {q_i}} \right ] m_u^2 \label{eq:grad_refl_mass_2}
+\end{equation}
+The quantities in \eqref{eq:grad_refl_mass_2} can be expanded as follows.
+\begin{equation}
+\frac{\partial {\Lambda_{v}^{-1}}}{\partial {q_i}} = \frac{\partial {J_v}}{\partial {q_i}} M^{-1} J_v^T + J_v \frac{\partial {M^{-1}}}{\partial {q_i}} J_v^T + J_v M^{-1} \left ( \frac{\partial {J_v}}{\partial {q_i}} \right )^T
+\end{equation}
+\begin{align}
+\frac{\partial {(\mathbf{u^T} \Lambda_{v}^{-1} \mathbf{u})}}{\partial {\mathbf{u}}}& = 2 \Lambda_{v}^{-1} \mathbf{u} \\
+%	\partialfrac{\vu}{q_i} & = \partialfrac{^0R_{EE}}{q_i} \vu_{EE} \\
+\frac{\partial {M^{-1}}}{\partial {q_i}} & = -M^{-1} 
+\frac{\partial {M}}{\partial {q_i}} M^{-1},
+\end{align}
+
+{\color{red} explain what means Jv and ALL the matrices that appear}
+
+When trying to expand this method to the 8-DOF robot we encounter a problem as the derivative of the reflected mass with respect to the first joint is zero.
+This is so because neither the Jacobian or the mass matrix depent on $q_1$ which makes sense if we take into account that the first joint now is translational type. For a more detailed explanation on robots with translational joints refer to \cite{cartesianrobot}.
+
+
+One could think of obtaining new equations of motion for the robot, where the constraint of null space movement would be satisfied. Which using the Lagragian approach would be getting from 
+
+\begin{equation}
+M(\mathbf{q})\ddot{\mathbf{q}}+C(\mathbf{q},\dot{\mathbf{q}})+G(\mathbf{q})=\mathbf{\tau} +J_c*\mathbf{\Lambda},
+\label{joint_space_dynamics}
+\end{equation}	
+to	
+
+\begin{equation}
+\bar{M}(\mathbf{q})\ddot{\mathbf{q}}+\bar{C}(\mathbf{q},\dot{\mathbf{q}})+\bar{G}(\mathbf{q})=\bar{\mathbf{\tau}},
+\label{new_joint_space_dynamics}
+\end{equation}	
+
+where $J_c$ is the [6x8] constrained Jacobian that express the null space movement and $\Lambda$ are the lagrangian multipliers. But one can see that none of the matrices in the new equation of motion would depend on $q_1$ as none of the originals depends on $q_1$, so this would actually solve nothing. {\color{red} I think that even if you obtain the new equations of motion depending on q1 and you use the Nico's equations to get the gradient respect to both q1 and q4 you are missing something because the null space is 6 constraints and you have 8 dofs. So be able to justify that this would work and what about those extra 2 dofs, or delete all this part about Lagrange.}
+
+One way to work around the problem of not having a derivative of the mass with respect to $q_1$ would be split the problem of minimizing in 2 dimensions in 2 problems. First a minimization can be done inside the self-motion-manifold slice for the current position of the linear axis, taking it as constant. This is nothing but minimization of the reflected mass in the 7-DOF LWR. And once the local minimum in this slice has been found then we solve the second problem: find the local minimum in the self-motion-manifold slice for the current position of the elbow. This process is done iteratively till the minimum in both dimensions is found, which will correspond to a minimum in the 2 dimensional null space.
+
+Although this method leads indeed to a local minimum but it does not necessarily has to be the closest local minimum. A case of this can be seen in {\color{red} referencia a la siguiente figura}  how this method would lead a minimum different than the closest one. 
+
+ {\color{red} meter la figura de peaks en 3d standar de matlab y explicar una configuraction que llevaria a un minimo que no es el closest}
+
+To actually reach the closest minimum the 2 dimensional problem is approached. Because we the null space movement represents 6 constraints (3 in each Cartesian direction and 3 for the rotation) and we have a 8-DOF is clear that we have to obtain somehow the velocities of 2 joints and then impose the null space constraint to obtain the velocities of the 6 remaining joints.
+
+Like we cannot obtain the derivative of the reflected mass with respect to $q_1$ an approximation would be used. For that, starting on a specific point in the reflected-mass-grid, the closest points in the self-motion-manifold slice for that current $q_1$ are obtained. Dividing the difference between both  $q_1$ coordinates by the step size we get the slope w.r.t. q1 in that current point. 
+And obviously the smaller the step size the better is the approximation because when it tends to zero it is by definition the derivative itself.
+
+
+\begin{equation}
+\frac{\partial {m_u(\mathbf{q})}}{\partial {q_1}} \approx \frac{m_{new} - m_{actual}}{ q_{1_{new}} - q_{1_{actual}}}, \label{eq:approx_grad_q1}
+\end{equation}
+
+Where 
+\begin{equation}
+m_u(\mathbf{q}) = {[\mathbf{u^T} \Lambda_{v}^{-1}(\mathbf{q}) \mathbf{u}]^{-1}}
+\end{equation}
+
+and because the mass depends on the joints configuration it is necessary to obtain them in every iteration in order to be able to evaluate the gradient of the first joint after each step. {\color{red} EN ALGUN MOMENTO ANTERIOR TENGO QUE HABER EXPLICADO EL MOVIMIENTO BASICO ENTRE SELF-MOTION-MANIFOLD SLICES CON LOS Q-DOT DE FABIAN CON LA PRIMERA Y CUARTA COMPONENTE ZERO Y aqui solo tengo que explicar que me muevo con una q4 constante, ergo in a self-motion-manifold slice for constant q4}
+
+Once we obtain the gradient (or a close approximation) of both $q_1$ and $q_4$ the null space constraint has to be imposed to obtain the velocities of the other 6 joints. One could think that the velocity of the remaining joints is not necessary to move along the slope of the grid as long as we have the gradient of both $q_1$ and $q_4$, but in each iteration is necessary to obtain $m_u (\mathbf{q})$, which depends on $\mathbf{q}$, to be calculate the approximation of the first gradient. Therefore we need all the joints to move. 
+
+Other option would be determine the new positions of $q_1$ and $q_4$ after a small displacement on the direction of their gradients and via inverse kinematics obtain the remaining joint coordinates, but obtaining the inverse kinematics of the 8-DOF is out of the scope of this thesis.
+
+To obtain $\dot{q_i}$ where where $i = 2,3,5, \dots, 8$ 2 methods are applied:
+
+\begin{enumerate}
+	\item firstly the robotic arm is considered as a parallel structure where the 
+	\item or try an iterative solution (Local optimization).
+\end{enumerate}
+
+\subsubsection{Parallel structure}
+
+\subsubsection{Linear combination}
+
+\subsubsection{Null space projection}
+\label{section:nsprojection}
