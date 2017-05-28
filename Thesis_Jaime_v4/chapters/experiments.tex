@@ -1,13 +1,6 @@
 \chapter{Experiments}
 \label{ch:experiments}
 
-\textcolor{red}{ 
-PLOT SMU RR VIDEO TEST 3 WITH FILTERS\\
-...\\
-CHECK REFERENCES
-}
-
-
 
 The experiments carried out can be divided into experiments where the end-effector (EE) is not moving  and others where the EE is following a trajectory. 
 For the static case EE (Section \ref{sec:static_case}), the three Cartesian directions are chosen to minimize the reflected mass . The goal of the tuning is to find a common set of parameters for the minimization along all three directions, including the effect of external forces. If accomplished, it would not be necessary to change the parameters of the controller when the robot changes its direction of motion.\\
@@ -262,7 +255,7 @@ In Fig. \ref{fig:SmuExp_Vel_vmax05} the absolute value for the velocity in the E
 In these figures one can also see how at the beginning, and at the end, of the motion the velocities show small peaks. Since we are plotting the absolute velocity, this is a sum of the three Cartesian velocities in the EE. This peak is higher in the x-direction that in the y- and z-, but still appears in the three directions. These peaks appear also without the SMU, or the minimization controller. Different Cartesian interpolators were tested, but still the peaks remained. And since this these appear both in the real robot and in the real time simulation, one may conclude that they are inherent to the behavior of the Cartesian impedance controller.  \\ 
 In Fig. \ref{fig:SmuExp_SafetyCurve_vmax05} the reflected masses are depicted, together with the corresponding velocities for each instant of the trajectory. Here one can see the effect of the SMU limiting the velocity, and how the controller reduces the mass allowing a faster motion. The safety curves are also depicted.
 %
-The points where the velocities exceed slightly the allowed maximum correspond to the mentioned peaks from Fig. \ref{fig:SmuExp_Vel_vmax05}. The SMU takes as an input the current Cartesian velocity of the EE. However, using this velocity there is a big overshooting when the velocities reaching the safety curve for the first time. These velocities show also oscillations close to the safety curve, but these oscillations may be decreased with a filter. To ensure a safe motion  during the first overshooting, one may set a conservative safety curve, which lower limits than the original one. Another option is to give a different input to the SMU, like for example a constant maximum Cartesian velocity. In this way, the velocity starts to be limited earlier, and the limitation increases as the velocity approaches the safety curve. Therefore, the limitation of the velocity is smoother and no overshooting appears. This earlier limitation can be seen in the Fig. \ref{fig:SmuExp_SafetyCurve_vmax05}. when the blue curves start to separate from the black ones. If the current Cartesian velocity is given as input to the SMU, these curves do not separate till the moment the safety curve is reached. After which the velocity would start to be limited, but due to the inertia of the robot the overshooting  appears.
+\textcolor{red}{The points where the velocities exceed slightly the allowed maximum correspond to the mentioned peaks from Fig. \ref{fig:SmuExp_Vel_vmax05}. The SMU usually takes as an input the current Cartesian velocity of the EE. However, using this input there is a big overshooting when the velocities reach the safety curve. These velocities show also oscillations close to the safety curve, but these oscillations may be decreased by using a filter. To ensure a safe motion  during the overshooting, one may set a conservative safety curve, with lower limits than the original one. Another option is to give a different input to the SMU, like for example a constant maximum Cartesian velocity. In this way, the velocity starts to be limited earlier, and the limitation increases proportionally as the velocity approaches the safety curve. Therefore, the limitation of the velocity is smoother and no overshooting is shown. This can be seen in Fig. \ref{fig:SmuExp_SafetyCurve_vmax05}  when the blue curves start to separate from the black one. If the current Cartesian velocity is given as input to the SMU, these curves do not separate till the moment the safety curve is reached. After which the velocity would start to be limited, but due to the inertia of the robot the overshooting  appears. }
 
 \begin{figure}[htp!]
 	\centering	

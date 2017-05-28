@@ -79,7 +79,7 @@ where, in our case with the 8-DOF,  $i = 1, \dots, 8$. This equation can be rewr
 
 The additional degrees of freedom can be used to perform secondary tasks without disturbing the primary task. Between these secondary tasks one may find joint limit avoidance, singularity avoidance, optimization of a given criteria such as manipulability, etc  \cite{redundancy_1}. 
 The null space projectors may be used to achieve these secondary tasks. An overview and comparison between different null space projectors can be found in \cite{JLA_5}, where the hierarchical null space task structure for different secondary tasks is discussed. Since in this thesis the focus is only in  one secondary task, i.e. the minimization of the reflected mass, only one projector is necessary. 
-A well-known projector at torque level is the proposed one by Oussama Khatib \cite{khatib1995}:
+A well-known projector on torque level is the proposed one by Oussama Khatib \cite{khatib1995}:
 
 
 
@@ -89,7 +89,7 @@ A well-known projector at torque level is the proposed one by Oussama Khatib \ci
 \end{equation}
 
 where $\mathbf{J}(\mathbf{q})^{\#MT} = (\mathbf{J}\mathbf{ M}^{-1} \mathbf{J}^T)^{-1} \mathbf{J} \mathbf{M}^{-1}$, is the mass weighted pseudoinverse. It is well known that the mass weighted pseudoinverse minimizes the kinetic energy \cite{khatib1995}, while the Moore-pseudoinverse minimizes the velocity under the null space motion constraint. The projector from (\ref{eq:proj_tau_khatib}) is proven to be statically and dynamically consistent. Meaning that the secondary task will not generate forces or accelerations in the operational spaces of higher priority tasks.
-At velocity level a standard projector is 
+On velocity level a standard projector is 
 
 \begin{equation}
 \mathbf{N}_{\mathbf{\dot{q}}}(\mathbf{q}) = \left(\mathbf{I}-\mathbf{J}^{\#}(\mathbf{q})\mathbf{J}(\mathbf{q})\right),
@@ -194,7 +194,7 @@ An example of this grid can be seen in Fig.	\ref{fig:reflected_mass_y-crop}.
 \label{sec:Samistuff}
 
 In \cite{sammi_paper} a relation between robot mass, velocity, impact geometry
-and resulting injury was formulated. With this injury knowledge an algorithm was developed to limit the velocity of the end-effector to ensure safe motions. This safety velocity controller is named Safe Motion Unit (SMU). 
+and resulting injury was formulated. With this injury knowledge an algorithm was developed to limit the velocity of the end-effector to ensure safe motions. This safe velocity controller is named Safe Motion Unit (SMU). 
 
 For different kind of objects, with different masses and geometries, the corresponding safety curves were created. As example one can see Fig. \ref{fig:Safety_curve_paper}
 

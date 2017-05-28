@@ -231,7 +231,7 @@ For our case with the 8-DOF robot, an attempt is done using curve fitting. If su
 \label{sec:global_numerical}
 
 
-In general the minimization of the reflected mass must be performed while the robot is following a trajectory. The algorithm  implemented on this thesis shows to be significantly faster than the standard algorithms to obtain the local extrema \cite{Lemire}. However, the computation of the grid with enough accuracy requires at least 2 s.  This precludes from online capabilities.  On the other hand, knowing the global minimum may be still interesting if the trajectory is previously known. In this way, the computation of these grids and the search of the global minima may be offline. .\\
+In general the minimization of the reflected mass must be performed while the robot is following a trajectory. The algorithm  implemented on this thesis shows to be significantly faster than the standard algorithms to obtain the local extrema \cite{Lemire}. However, the computation of the grid with enough accuracy requires at least 2 s.  This precludes from online capabilities.  On the other hand, knowing the global minimum may be still interesting if the trajectory is previously known. In this way, the computation of these grids and the search of the global minima may be offline.\\
 %
 Another problem that may be solved offline is the computation of the path to the minimum. This is necessary because the robot may go through local peaks of maximum reflected mass, on his trajectory to the global minimum. This may be solved with path optimization techniques, out of the scope of this work. 
 

@@ -2,7 +2,7 @@
 \label{ch:velocity}
 
 The problem of finding a local minimum requires a null space velocity that minimizes the reflected mass.
-Optimization of a secondary task at velocity level is an extensively discussed topic. Some optimization schemes can be found in \cite{opt_vel_level_1} and \cite{opt_vel_level_2}.  The first idea proposed in this work is to project the gradient of the reflected mass into the null space. For which two approaches are considered: Project Gradient (PG) \cite{JLA_1} and the Reduced Gradient method (RG) \cite{PG_RG}. This chapter begins with a review on both methods in Section \ref{sec:PGvsRG}.
+Optimization of a secondary task on velocity level is an extensively discussed topic. Some optimization schemes can be found in \cite{opt_vel_level_1} and \cite{opt_vel_level_2}.  The first idea proposed in this work is to project the gradient of the reflected mass into the null space. For which two approaches are considered: Project Gradient (PG) \cite{JLA_1} and the Reduced Gradient method (RG) \cite{PG_RG}. This chapter begins with a review on both methods in Section \ref{sec:PGvsRG}.
  The RG is treated in detail in Section \ref{sec:1D2D}, where the proposed algorithm to find local minima is introduced. This RG is computed analytically and numerically.  
  A theoretical comparison of both approaches is done in this chapter while the practical comparison, after implementation in the robot, is described in  Chapter \ref{ch:experiments}. Making use of the RG technique, decoupling on the minimization is achieved in Section \ref{sec:Decoupling}. This decoupling consists in separate, and weight, the minimization of the reflected mass w.r.t. both redundant joints. The possibility of taking advantage of this decoupling to avoid joint limits is presented in Section \ref{subsec:wf_JLA}.
 Besides Gradient Descent (GD),  other Line Search minimization schemes are considered and tested. The chapter concludes with a comparison of all the minimization schemes in  Section \ref{sec:comparison_local_minim}.
@@ -17,7 +17,7 @@ Besides Gradient Descent (GD),  other Line Search minimization schemes are consi
 %\label{subsubsec:desc_direction}
 
 The main difference between both approaches is the dimension of the gradient.  In PG the eight-dimensional gradient is projected into the null space, while in RG the gradient only w.r.t. the redundant joints ($\mathrm{q_1}$ and $\mathrm{q_4}$ in this case) is considered.
-PG is analog to the minimization approach discussed in Section \ref{sec:Gradientbasedminimization} at torque level. Using the projector from (\ref{eq:proj_dq_khatib}), the null space velocity is:
+PG is analog to the minimization approach discussed in Section \ref{sec:Gradientbasedminimization} on torque level. Using the projector from (\ref{eq:proj_dq_khatib}), the null space velocity is:
 
 
 \begin{equation}
@@ -72,7 +72,7 @@ where $\mathbf{J}_{nr}$ and $\mathbf{J}_{r}$ are the Jacobians associated to the
 
 \begin{equation}
 \mathbf{\dot{q}}_{ns} = \left[\mathbf{\dot{q}}_{nr}, \  \mathbf{\dot{q}}_{r} \right ] 
-= \left[(-\mathbf{J}_{nr}^{-1} \mathbf{J}_r), \    \mathbf{I} \right ]^{T}  \nabla m'_u(\mathbf{q}).
+= - k \left[(-\mathbf{J}_{nr}^{-1} \mathbf{J}_r), \    \mathbf{I} \right ]^{T}  \nabla m'_u(\mathbf{q}).
 \label{eq:ns_velocity_RG}
 \end{equation}
 
