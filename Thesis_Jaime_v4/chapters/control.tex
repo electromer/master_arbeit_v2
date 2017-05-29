@@ -221,7 +221,7 @@ Mathematica is not able to return this integral as a composition of elementary f
 
 
 
-For our case with the 8-DOF robot, an attempt is done using curve fitting. If successful, this would generate a function, from this point cloud, that could be used as an input to the solvers provided by MATLAB Optimization Toolbox. However, the obtained functions do not resemble enough the original grid. The difficulty increases when the robot is following a trajectory because the surface changes with the direction of the end-effector. Being this approach discarded, one needs to work with numerical values. 
+For our case with the 8-DOF robot, an attempt is done using curve fittting. If successful, this would generate a function, from this point cloud, that could be used as an input to the solvers provided by MATLAB Optimization Toolbox. For this the function \textit{fit} from MATLAB is used. This functions allows to fit a curve to a surface up to a degree of five for each of the inputs ($\mathrm{q_1}$ and $\mathrm{q_4}$ in our case).  However, the obtained functions do not resemble enough the original grid because the degree of $\mathrm{q_1}$ and $\mathrm{q_4}$ needs to be higher than five. The difficulty increases when the robot is following a trajectory because the surface changes with the direction of the end-effector. One possible approach could be the use of neural networks to find a better fitting of the curve, but this is out of the scope of this thesis. Being this approach discarded, one needs to work with numerical values. 
 
 
 
