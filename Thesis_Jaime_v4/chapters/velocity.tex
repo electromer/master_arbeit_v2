@@ -32,7 +32,7 @@ where  $\mathrm{k}$ is again a positive scaling gain and $\mathrm{\nabla m_u(\ma
 %
 %
 In (\ref{eq:RG_dq}) the Moore-Penrose pseudoinverse is firstly chosen for the projector. 
-However, many different projectors can be used. As an alternative to the previous one, a projector based on the mass weighted pseudoinverse, is also considered here. The null space projector has to be nonnegative definite to ensure that, for any $\mathrm{k > 0}$, the mass is minimized. A proof of this can be found in \cite{yoshikawa}. Using the Moore-pseudoinverse, the null space projector is always positive definite, but using the mass weighted pseudoinverse the null space projector is not symmetrical, hence non-definite. Therefore, in order to ensure minimization, it is necessary to post-multiplicate the mass weighted projector by the inverse of the mass matrix, $\mathbf{M}^{-1}$  \cite{Nemec}. The null space velocity is in this case: 
+However, many different projectors can be used. As an alternative to the previous one, a projector based on the mass weighted pseudoinverse, is also considered here. The motivation to use this projector is the positive results obtained in \cite{Nemec_2} for optimization. The null space projector has to be nonnegative definite to ensure that, for any $\mathrm{k > 0}$, the mass is minimized. A proof of this can be found in \cite{yoshikawa}. Using the Moore-pseudoinverse, the null space projector is always positive definite, but using the mass weighted pseudoinverse the null space projector is not symmetrical, hence non-definite. Therefore, in order to ensure minimization, it is necessary to post-multiplicate the mass weighted projector by the inverse of the mass matrix, $\mathbf{M}^{-1}$  \cite{Nemec}. The null space velocity is in this case: 
 
 \begin{equation}
 	\mathbf{\dot{q}}_{ns} =  - k (\mathbf{I} -  \mathbf{J}^{\#MT} \mathbf{J} ) \mathbf{M}^{-1} \nabla {m}_u(\mathbf{q}). \label{eq:RG_dq_nemec}
@@ -72,16 +72,16 @@ where $\mathbf{J}_{nr}$ and $\mathbf{J}_{r}$ are the Jacobians associated to the
 
 \begin{equation}
 \mathbf{\dot{q}}_{ns} = \left[\mathbf{\dot{q}}_{nr}, \  \mathbf{\dot{q}}_{r} \right ] 
-= - k \left[(-\mathbf{J}_{nr}^{-1} \mathbf{J}_r), \    \mathbf{I} \right ]^{T}  \nabla m'_u(\mathbf{q}).
+= - k \left[(-\mathbf{J}_{nr}^{-1} \mathbf{J}_r), \    \mathbf{I} \right ]^{T}  \nabla m'_u(\mathbf{q}),
 \label{eq:ns_velocity_RG}
 \end{equation}
 
 
-\textcolor{blue}{It is clear to see that if $\mathbf{J}_{nr}$ does not lose rank, its inversion is much more efficient than the computation of the $\mathrm{8x8}$ pseudoinverse in the PG method. Implementing both methods, PG and RG, in a MATLAB script shows that: Using the Moore-Penrose projector, the PG  requires approximately $2*10^{-3}$ s, while RG  needs only $2.5*10^{-4}$ s. The PG with the mass weighted projector needs approximately $3*10^{-3}$ s. The speed of convergence is hard to measure because the number of iterations to reach a minimum is different in both methods.
+where $\mathrm{k}$ is the already mentioned scaling factor. It is clear to see that if $\mathbf{J}_{nr}$ does not lose rank, its inversion is much more efficient than the computation of the $\mathrm{8x8}$ pseudoinverse in the PG method. Implementing both methods, PG and RG, in a MATLAB script shows that: Using the Moore-Penrose projector, the PG  requires approximately $2*10^{-3}$ s, while RG  needs only $2.5*10^{-4}$ s. The PG with the mass weighted projector needs approximately $3*10^{-3}$ s. The speed of convergence is hard to measure because the number of iterations to reach a minimum is different in the three approaches.
 As mentioned in \cite{reduced_gradient}, PG and RG converge in different directions as soon as the redundancy degree is more than one. In Fig. \ref{fig:diff_GD_v2} one can see how the three approaches lead to different minima.  In \cite{Nemec_2}, the mass weighted projector for PG, lead to good minimization when implementing it for obstacle avoidance.  
-However in this case, the mass weighted projector tends to minimize mainly w.r.t. the elbow. This might be due to the prerotation of the gradient before projecting it in the null space (see (\ref{eq:RG_dq_nemec})). Although the dimensions of both redundant joints are different, it is in general preferred to have small displacements in the linear axis than big ones in the elbow. In the Fig. \ref{fig:diff_GD_v2}, RG and PG with the Moore-Penrose pseudoinverse reach a minimum moving the linear axis approximately 0.2 m, while the PG with the mass weighted pseudoinverse needs to move approximately 60 degrees the fourth joint to achieve a minimum. To fully exploit both degrees of freedom of the robot, the PG approach with the mass weighted pseudoinverse is discarded. 
- For the tested scenarios, there are not significant differences in the rate of convergence between RG and PG with the Moore-Penrose pseudoinverse, since they reach minima not far from each other.  \\ 
-Being RG analytically simpler and numerically faster, this is the method chosen to continue in this thesis. }
+However in this case, the mass weighted projector tends to minimize mainly w.r.t. the elbow. This might be due to the prerotation of the gradient before projecting it in the null space (see (\ref{eq:RG_dq_nemec})). Although the dimensions of both redundant joints are different, it is in general preferred to have small displacements in the linear axis than big ones in the elbow. In the Fig. \ref{fig:diff_GD_v2}, RG and PG with the Moore-Penrose pseudoinverse reach a minimum moving the linear axis approximately 0.2 m, while the PG with the mass weighted pseudoinverse needs to move approximately 60 degrees the fourth joint to achieve a minimum. To better exploit both degrees of freedom of the robot, the PG approach with the mass weighted pseudoinverse is discarded. 
+ \\ 
+Being RG analytically simpler and numerically faster, this is the method chosen to continue in this thesis. 
 
 
 \begin{figure}[!htb]
@@ -145,7 +145,7 @@ Being RG analytically simpler and numerically faster, this is the method chosen 
 The gradient $\nabla m'_u(\mathbf{q})$  from (\ref{eq:ns_velocity_RG}) is originally  chosen in \cite{reduced_gradient} as : 
 
 \begin{equation}
- \nabla m'_u(\mathbf{q}) = - k \left[(-\mathbf{J}_{nr}^{-1} \mathbf{J}_r)^{T}, \   \mathbf{I} \right ] \nabla m_u(\mathbf{q})
+ \nabla m'_u(\mathbf{q}) =  \left[(-\mathbf{J}_{nr}^{-1} \mathbf{J}_r)^{T}, \   \mathbf{I} \right ] \nabla m_u(\mathbf{q})
  ,
 \label{eq:RG_deLuca}
 \end{equation}
@@ -155,7 +155,7 @@ The gradient $\nabla m'_u(\mathbf{q})$  from (\ref{eq:ns_velocity_RG}) is origin
 
 
 
-where $\mathrm{\nabla m_u(\mathbf{q})}$ is the original eight-dimensional gradient from  (\ref{eq:grad_refl_mass_1}), and $\mathrm{k}$ the already mentioned scaling factor. 
+where $\mathrm{\nabla m_u(\mathbf{q})}$ is the original eight-dimensional gradient from  (\ref{eq:grad_refl_mass_1}). 
 By looking at (\ref{eq:ns_velocity_RG}) and (\ref{eq:RG_deLuca}), one can see how the equivalent null space projector for the RG approach is $\mathrm{\left[(-\mathbf{J}_{nr}^{-1} \mathbf{J}_r), \    \mathbf{I} \right ]^{T}  \left[(-\mathbf{J}_{nr}^{-1} \mathbf{J}_r)^{T}, \   \mathbf{I} \right ]  }$. \\
 It is worth mentioning that this optimization method allows to select independently the variables used for the optimization. Meaning that the selection of the redundant joints is not constrained by this approach. 
 A pseudo code for the simplified algorithm is listed in Algorithm \ref{alg:2D_alg}, where $\mathrm{\nabla m'_u(\mathbf{q})}$ (in line \ref{2D_alg:line:select}) may be obtained numerically (see Section \ref{sec:numerical}) or analytically (see Section \ref{sec:analytical}). Once $\mathrm{\nabla m'_u(\mathbf{q})}$ is obtained, the velocity for the null space motion is obtained using (\ref{eq:ns_velocity_RG}). This velocity is integrated using a explicit Euler method. To improve the accuracy, a correction term is used. An inherent characteristic of GD methods are the criss-cross patterns (zigzagging). The algorithm checks then if these oscillations appear  close to the minimum. The zigzag and the strategies to deal with it are discussed in more detail in Sections \ref{subsubsec:zigzag} and  \ref{subsec:compare_local_minim_methods}.
@@ -369,7 +369,7 @@ The gradient is then computed performing small displacements inside the null spa
 
 
 \begin{equation}
-\frac{\partial {m_u(\mathbf{q})}}{\partial {q_4}} \approx \frac{m_{new}(\mathbf{q}_{new}) - m_{actual}(\mathbf{q})}{ q_{4_{new}} - q_{4_{actual}}}.
+\frac{\partial {m'_u(\mathbf{q})}}{\partial {q_4}} \approx \frac{m_{new}(\mathbf{q}_{new}) - m_{actual}(\mathbf{q})}{ q_{4_{new}} - q_{4_{actual}}}.
 \label{eq:approx_grad_q4}
 \end{equation}
 
@@ -398,7 +398,7 @@ The relation chosen to weight both joints is a linear one. So the new joint velo
 	\label{eq:decoupling_q1} 
 \end{equation} 
 \begin{equation}
-	{\dot{q}}_{4_{new}} = {\dot{q}}_{4}(1-WF),
+		{\dot{q}}_{4_{new}} = {\dot{q}}_{4}(1-WF),
 	\label{eq:decoupling_q4}
 \end{equation}
 
@@ -887,8 +887,9 @@ There are several ways to compute a null space velocity that minimizes the refle
 
 
 In Tab.\ref{table:comp_ls_methods} the results of tests for different initial configurations and different reflected directions are listed. There is a comparison of the GD and both QNM. As already mentioned CGD methods lead to worse convergence than GD. The Trust Region methods and the NM are not implementable for both approaches, analytical and numerical.
-The tested cases were chosen so the initial configuration is relatively far from the minimum, because close to a minimum all methods perform the same.
-The QNM, and in particular BFGS, are in general faster than GD. This is to be expected, since BFGS is an improved version of DFP. However, the difference is not significant. Theoretically the convergence should be much faster for the QNM but the need to restart them often, as explained in the Section \ref{subsubsec:loss_pdness}, causes the convergence rate to decrease. Being even for some cases the GD approach slightly faster. This may happen minimizing along the y- and z-direction since these grids show contour lines for the local minima. Therefore, these methods reach different minima. However, in the x-direction the grid does not show these countour lines, and all the methods converge to the same minimum. In this direction it is clear how the QNM converge faster than the GD.
+The tested cases were chosen so the initial configuration is relatively far from the minimum, because close to a minimum all methods perform similarly.
+The QNM, and in particular BFGS, are in most of the times faster than GD. This is to be expected, since BFGS is an improved version of DFP.  In two tests  the GD shows faster convergence along the y- and z-direction. This is possible  because these grids show contour lines for the local minima. Therefore, these methods reach different minima. However, in the x-direction the grid does not show these countour lines, and all the methods converge to the same minimum. In this direction it is clear how the QNM converge faster than the GD.
+ However, the difference is not significant. Theoretically the convergence should be much faster for the QNM but the need to restart them often, as explained in the Section \ref{subsubsec:loss_pdness}, causes the convergence rate to decrease. 
 In one case, one of the methods (DFP) reached the joint limits and it stopped. But no method is more prone to reach joint limits. For all this, and for sake of simplicity, the GD method is the one chosen to be implemented in the controller.\\
 If zigzagging is present, the Algorithm \ref{alg:2D_alg} (see line \ref{2D_alg:line:zigzag}) stops when the gradient is smaller than a certain convergence parameter ($\mathrm{|\nabla m'_u(\mathbf{q})| < \epsilon=0.1 )}$.
 In the tested grids, this convergence parameter ensures that the position is close the minimum. Therefore, the improvement between finding the desired local minimum and being below the convergence threshold is insignificant. So this is not a criterion to decide between the methods.

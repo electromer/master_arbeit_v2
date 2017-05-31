@@ -111,10 +111,10 @@ In previous work \cite{paper_iros2017} the minimization of the reflected mass fo
 The first approach to obtain null space torque, that minimizes the reflected inertia, is to project the numerical gradient of the reflected mass into the null space:
  
 \begin{equation}
-\mathbf{\tau}_d = \mathbf{\tau}_\mathrm{imp} - k (\mathbf{I} - \mathbf{J}^T \mathbf{J}^{\#T}) \nabla m_u(\mathbf{q}), \label{eq:gbm_nico}
+\mathbf{\tau}_d = \mathbf{\tau}_\mathrm{imp} - k (\mathbf{I} - \mathbf{J}^T \mathbf{J}^{\#MT}) \nabla m_u(\mathbf{q}), \label{eq:gbm_nico}
 \end{equation}
 
-where $\mathbf{\tau}_\mathrm{imp}$ is the torque of the impedance controller and $\nabla m_u(\mathbf{q})$ is the gradient of the reflected mass \cite{paper_iros2017}. To obtain static and dynamic consistency \cite{khatib1995} the mass-weighted generalized inverse of the Jacobian $\mathbf{J}^{\#}$ is used.
+where $\mathbf{\tau}_\mathrm{imp}$ is the torque of the impedance controller and $\nabla m_u(\mathbf{q})$ is the gradient of the reflected mass \cite{paper_iros2017}. To obtain static and dynamic consistency \cite{khatib1995} the mass-weighted generalized inverse of the Jacobian $\mathbf{J}^{\#M}$ is used.
 This approach shows good behavior close to minima, but is not able to overcome the friction close to local maxima. 
 
 
@@ -133,7 +133,7 @@ U(\mathbf{q}) = - \frac{1}{2} K_p (\mathbf{q}_{m_u}^\ast - \mathbf{q})^T (\mathb
 
 where $\mathbf{q}_{m_u}^\ast$ is the goal position that minimizes the reflected mass. And projecting this torque into the null space
 \begin{equation}
-\mathbf{\tau}_d = \mathbf{\tau}_\mathrm{imp} + (I - \mathbf{J}^T \mathbf{J}^{\#T}) \mathbf{\tau}_{m_u}^\ast, \label{eq:potential_controller_intro}
+\mathbf{\tau}_d = \mathbf{\tau}_\mathrm{imp} + (I - \mathbf{J}^T \mathbf{J}^{\#MT}) \mathbf{\tau}_{m_u}^\ast, \label{eq:potential_controller_intro}
 \end{equation}
 
 where 
@@ -160,7 +160,6 @@ Considering the  8-DOF, an algorithm to determine a grid of the self-motion mani
 \dot{\mathbf{q}}_* =\begin{pmatrix}0 \\ \vdots  \\ *\\ \vdots\\ *\end{pmatrix}.
 \label{eq:smms_velocity}
 \end{equation} 
-
 The first term must be zero to ensure that the position of the linear axis is constant.
 With this velocity is possible to obtain null space motions corresponding to the 8-DOF robot with a constant position of the linear axis.
 Secondly the integration is along the linear axis. A velocity $\dot{\mathbf{q}}_*$ orthogonal to the previous one is needed. Orthogonalization is needed to ensure that both null space velocities span the whole null space. It is obtained via Gram-Schmidt orthogonalization, having the second velocity vector $\dot{\mathbf{q}}_*^{\bot}$ the following property

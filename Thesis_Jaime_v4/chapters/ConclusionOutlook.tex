@@ -9,20 +9,20 @@ Still showing oscillations, a  non-normalized joint velocity is chosen. This bou
 An algorithm based on the Reduced  Gradient is implemented in a real-time capable controller. The controller is tuned for both, the analytical and the numerical approach. The addition of damping is necessary to decrease the overshooting in the joints, especially in the linear axis. The analytical approach is  computationally more efficient. The numerical approach is more robust to parameters variation.
 Finally the controller is implemented in combination with the SMU. The SMU limits the velocity to a biomechanically safe value provided the mass and the curvature in the direction of movement. While the SMU ensures safe motion, the controller developed in this thesis minimizes the reflected mass, allowing the end-effector to reach higher velocities. 
 
-
-
+%
+%
 %\section{Future work}
 %\label{sec:future_work}
 %
 %Prove analytically that the integral of kernel of the Jacobian of the LWR (\ref{eq:dq_ns}) has no closed form. An attempt has been done in this work finding the most simple terms of this kernel and searching for a closed form of their integrals. Although software like Mathematica is not able to obtain these closed forms directly, in this thesis it is proved that some of them have closed form. Further analysis of the remaining terms is left to future work, since proving that one of this terms has no closed form would be enough to prove that the integral of the kernel has not closed form either. 
-%\subsection{Generalization to n-DOF}
-%\label{subsec:extension_ndof}
 %
-
-
-
-
-
-%\section{Future work}
+%
 %-more efficient ways to compute these matrices and their inverses to allow higher nmax. Specially in the numerical approach
-
+%
+%
+%-implementation of singularity avoidance especially when minimizing along z
+%
+%
+%
+%
+%
