@@ -79,14 +79,14 @@ where $\mathbf{J}_{nr}$ and $\mathbf{J}_{r}$ are the Jacobians associated to the
 
 where $\mathrm{k}$ is the already mentioned scaling factor. It is clear to see that if $\mathbf{J}_{nr}$ does not lose rank, its inversion is much more efficient than the computation of the $\mathrm{8x8}$ pseudoinverse in the PG method. Implementing both methods, PG and RG, in a MATLAB script shows that: Using the Moore-Penrose projector, the PG  requires approximately $2*10^{-3}$ s, while RG  needs only $2.5*10^{-4}$ s. The PG with the mass weighted projector needs approximately $3*10^{-3}$ s. The speed of convergence is hard to measure because the number of iterations to reach a minimum is different in the three approaches.
 As mentioned in \cite{reduced_gradient}, PG and RG converge in different directions as soon as the redundancy degree is more than one. In Fig. \ref{fig:diff_GD_v2} one can see how the three approaches lead to different minima.  In \cite{Nemec_2}, the mass weighted projector for PG, lead to good minimization when implementing it for obstacle avoidance.  
-However in this case, the mass weighted projector tends to minimize mainly w.r.t. the elbow. This might be due to the pre-rotation of the gradient before projecting it in the null space (see (\ref{eq:RG_dq_nemec})). Although the dimensions of both redundant joints are different, it is in general preferred to have small displacements in the linear axis than big ones in the elbow. In the Fig. \ref{fig:diff_GD_v2}, RG and PG with the Moore-Penrose pseudoinverse reach a minimum moving the linear axis approximately 0.2 m, while the PG with the mass weighted pseudoinverse needs to move approximately 60 degrees the fourth joint to achieve a minimum. To better exploit both degrees of freedom of the robot, the PG approach with the mass weighted pseudoinverse is discarded. 
+However in this case, the mass weighted projector tends to minimize mainly w.r.t. the fourth joint. This might be due to the pre-rotation of the gradient before projecting it in the null space (see (\ref{eq:RG_dq_nemec})). Although the dimensions of both redundant joints are different, it is in general preferred to have small displacements in the linear axis than big ones in the elbow. In the Fig. \ref{fig:diff_GD_v2}, RG and PG with the Moore-Penrose pseudoinverse reach a minimum moving the linear axis approximately 0.2 m, while the PG with the mass weighted pseudoinverse needs to move approximately 60 degrees the fourth joint to achieve a minimum. To better exploit both degrees of freedom of the robot, the PG approach with the mass weighted pseudoinverse is discarded. 
  \\ 
 Being RG analytically simpler and numerically faster, this is the method chosen to continue in this thesis. 
 
 
 \begin{figure}[!htb]
 	\centerline{
-		\includegraphics[width=1.7\textwidth]{images/diff_GD_v2.eps}}
+		\includegraphics[width=1.7\textwidth]{images/diff_GD_v2_new.eps}}
 	\caption{Comparison of the trajectories using PG, with Moore-Penrose and mass weighted pseudoinverse, and RG.}
 	\label{fig:diff_GD_v2}
 \end{figure}
@@ -236,13 +236,13 @@ However, a high number of iterations has two disadvantages. First of all, in eac
 %
 \begin{figure}[H]
 	\centerline{
-		\includegraphics[width=0.9\textwidth]{images/bad_case_3d.eps}}
+		\includegraphics[width=0.8\textwidth]{images/bad_case_3d.eps}}
 	\caption{Comparison between the trajectory described by the robot for low number of iterations (red) and for high number of iterations (black). The color-bar indicates the different masses.}
 	\label{fig:bad_case_3d}
 \end{figure}
 \begin{figure}[H]
 	\centerline{
-		\includegraphics[width=1.4\textwidth]{images/bad_case_contour_ubuntu.eps}}
+		\includegraphics[width=1.1\textwidth]{images/bad_case_contour_ubuntu_new.eps}}
 	\caption{Contour lines for the comparison between the trajectory described by the robot for low number of iterations (red) and for high number of iterations (black). The color-bar indicates the different masses.}
 	\label{fig:bad_case_contour}
 \end{figure}
@@ -364,7 +364,7 @@ To impose the constraint in the differentiation of the reflected mass one can wo
 %\textcolor{magenta}{ \st{By computing the gradient in this way a clear advantage becomes visible. It is not possible to find false minima as it can be a saddle point. This is a problem that appeared in Section GBM  projecting directly the gradient of the mass into the null space.} } \correction{this saddle point is solved actually in general with the attractive potential approach}
 
 
-The gradient is then computed performing small displacements inside the null space grid. Starting in an initial joint configuration, first the gradient w.r.t. the elbow is computed. For this a velocity like (\ref{eq:smms_velocity}) is necessary. It is interesting to notice that this first step is like considering the LWR alone, without the linear axis since its positions is constant. The approximation is done dividing the difference between both  masses by the difference between both positions of the elbow. 
+The gradient is then computed performing small displacements inside the null space grid. Starting in an initial joint configuration, first the gradient w.r.t. the fourth joint is computed. For this a velocity like (\ref{eq:smms_velocity}) is necessary. It is interesting to notice that this first step is like considering the LWR alone, without the linear axis since its positions is constant. The approximation is done dividing the difference between both  masses by the difference between both positions of the fourth joint. 
 
 
 
@@ -390,7 +390,7 @@ Another option would be determine the new positions of $\mathrm{q_1}$ and $\math
 %\label{subsec:1Dminim}
 
 With the RG approach we are computing the gradient w.r.t. two joints and directly using it as the velocity of the redundant joints. The velocities of these two joints ($\mathrm{q_1}$ and $\mathrm{q_4}$) are proportional to these gradients. This allows us to weight the relation between both gradients, making it possible to reach a local minimum
-by moving for example only the linear axis or only the elbow. Since the units of both joints are different (the linear axis displacement is measured in meters and the elbow in radians) the relation between them may be weighted freely.
+by moving for example only the linear axis or only the fourth joint. Since the units of both joints are different (the linear axis displacement is measured in meters and the fourth joint in radians) the relation between them may be weighted freely.
 The relation chosen to weight both joints is a linear one. So the new joint velocities are: 
 
 \begin{equation}
@@ -404,13 +404,13 @@ The relation chosen to weight both joints is a linear one. So the new joint velo
 
 
 where $\mathrm{WF \in [0,1]}$, is the weighing factor variable.
-When $\mathrm{WF=1}$ the minimization is done only w.r.t. the linear axis , and when $\mathrm{WF=0}$ only by the elbow (see Fig. \ref{fig:wf}) will move.
+When $\mathrm{WF=1}$ the minimization is done only w.r.t. the linear axis , and when $\mathrm{WF=0}$ only by the fourth joint (see Fig. \ref{fig:wf}) will move.
 For the  remaining experiments no weighting is considered, which can be regarded as $\mathrm{WF=1}$.
 
 \begin{figure}[!h]
 	\centering	
-	\subfigure[]{\label{fig:wf_1}}{\includegraphics[height=0.5\textwidth]{images/wf1.eps}} 	\subfigure[]{\label{fig:wf_0}}{\includegraphics[height=0.5\textwidth]{images/wf0.eps}} 	 	
-	\caption{Fig. \ref{fig:wf_1}:  Minimization for weighting factor of 1 (only  linear axis motion). \\ Fig. \ref{fig:wf_0}: Minimization for weighting factor of 0 (only elbow motion). }
+	\subfigure[]{\label{fig:wf_1}}{\includegraphics[height=0.5\textwidth]{images/wf1_new.eps}} 	\subfigure[]{\label{fig:wf_0}}{\includegraphics[height=0.5\textwidth]{images/wf0_new.eps}} 	 	
+	\caption{Fig. \ref{fig:wf_1}:  Minimization for weighting factor of 1 (only  linear axis motion). \\ Fig. \ref{fig:wf_0}: Minimization for weighting factor of 0 (only fourth joint motion). }
 	\label{fig:wf}
 \end{figure}
 
@@ -425,8 +425,8 @@ In the numerical approach $\mathrm{{\dot{q}}_{1}}$ and $\mathrm{{\dot{q}}_{4}}$ 
 
 
 Previously the velocity has been normalized before integrating. Applying the GD, it is likely that the minimum is first reached in one dimension, then in the other one. An example of this is depicted in Fig. \ref{fig:weird case}. In  Fig. \ref{fig:gradients_weird_case} one can see how the gradients w.r.t. the linear axis %($\frac{\partial {m_u(\mathbf{q})}}{\partial{\mathbf{q_{1}}}}$) 
-and the elbow %($\frac{\partial {m_u(\mathbf{q})}}{\partial{\mathbf{q_{4}}}}$) 
-decrease within time. At 114.45 s a minimum along the linear axis, but the gradient w.r.t. the elbow is still not zero. When this occurs there is an abrupt change in the joint velocities, see Fig. \ref{fig:velocities_weird_case}.
+and the fourth joint %($\frac{\partial {m_u(\mathbf{q})}}{\partial{\mathbf{q_{4}}}}$) 
+decrease within time. At 114.45 s a minimum along the linear axis, but the gradient w.r.t. the fourth joint is still not zero. When this occurs there is an abrupt change in the joint velocities, see Fig. \ref{fig:velocities_weird_case}.
 This is because when the gradient w.r.t. the linear axis %$\frac{\partial {m_u(\mathbf{q})}}{\partial{\mathbf{q_{1}}}} = 0$ 
 reaches zero, the minimization is done inside a self-motion manifold slice for constant position of the linear axis.
 
@@ -515,12 +515,12 @@ Clearly, a minimum in both dimensions corresponds to a minimum on the grid. But 
 %
 \begin{figure}[!htb]
 	\centerline{
-		\includegraphics[width=0.7\textwidth]{images/1D.eps}}
+		\includegraphics[width=0.7\textwidth]{images/1D_new.eps}}
 	\caption{Contour lines for the comparison between the trajectory obtained with the minimization strategy in 2D (red) and with the minimization strategy in 1D (black). The color-bar indicates the different masses.}
 	\label{fig:1D}
 \end{figure} 
 %
-The strategy here introduced may be of interest in other scenarios. For example in presence of obstacles on the trajectory of the linear axis, the minimization could be switched and only done with the elbow.
+The strategy here introduced may be of interest in other scenarios. For example in presence of obstacles on the trajectory of the linear axis, the minimization could be switched and only done with the fourth joint.
 Another application for this approach is joint limit avoidance.
 A typical strategy for joint limit avoidance is the use of repulsive potentials \cite{JLA_3}, \cite{JLA_4}. These potentials usually are proportional to the squared distance of each joint to its joint limit. 
 
@@ -638,13 +638,13 @@ Besides the advantage that the minimization and the joint limit avoidance do not
 
 
 
-  In the Fig. \ref{fig:wf_for_jla} this approach is depicted. The non-colored part of the grid represents the area beyond the joint limits. The robot starts in a configuration beyond the limits, so first the repulsive potential takes it to the reachable area. Once there, the minimization is done without decoupling. When the limits are reached again,  the minimization is done w.r.t. the elbow only, till the local minimum is found. In Fig. \ref{fig:wf_for_jla} one can see how there is a  small displacement of the linear axis when it reaches the non-reachable area. Due to its inertia, the linear axis trespass the joints limits, but the potential pushes it quickly to the reachable area.
+  In the Fig. \ref{fig:wf_for_jla} this approach is depicted. The non-colored part of the grid represents the area beyond the joint limits. The robot starts in a configuration beyond the limits, so first the repulsive potential takes it to the reachable area. Once there, the minimization is done without decoupling. When the limits are reached again,  the minimization is done w.r.t. the fourth joint only, till the local minimum is found. In Fig. \ref{fig:wf_for_jla} one can see how there is a  small displacement of the linear axis when it reaches the non-reachable area. Due to its inertia, the linear axis trespass the joints limits, but the potential pushes it quickly to the reachable area.
 
 
 
 \begin{figure}[!htb]
 	\centerline{
-		\includegraphics[width=0.8\textwidth]{images/JLA_weighting_v2.eps}}
+		\includegraphics[width=0.8\textwidth]{images/JLA_weighting_v2_new.eps}}
 	\caption{Joint limit avoidance using decoupling. First the robot if pushed to the reachable area (red trajectory) and then the reflected mass is minimized avoiding joint limits (black trajectory).}
 	\label{fig:wf_for_jla}
 \end{figure}
@@ -766,7 +766,7 @@ These methods are based on the approximation of the inverse of the Hessian:
 The gradient is updated such that
 
 \begin{equation}
-\nabla f(\mathbf{x}_k + \Delta \mathbf{x})= \nabla f(\mathbf{x}_k) + \mathbf{B}_k {\Delta \mathbf{x} }
+{d_k = - \mathbf{B}_k  g_k }
 \end{equation}
 
 

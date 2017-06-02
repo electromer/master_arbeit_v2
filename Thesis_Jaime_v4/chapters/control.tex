@@ -239,12 +239,12 @@ Another problem that may be solved offline is the computation of the path to the
 One way to see the numerical values of the grid is as image-points of a picture. Where the third coordinate of each point represents a property of the image at that point, like for example the color. From this point of view the dataset, that is the point cloud, may be treated with tools from the MATLAB Image Processing Toolbox. These can be used to write an algorithm that finds the minima in the data set. Not having a license for such a Toolbox another implementation is necessary.
 Without making use of this Toolbox a filter \cite{minmaxfilter} to find the local maxima and minima from a given dataset is used. This filter computes the maxima and minima over running windows of a determined size. The concept “\textit{window}” here refers to the image-processing domain. Given a pixel value at a point \textit{(x,y)} the window limits an area (usually squared) around the pixel, where the extreme local values are searched. The \textit{pixel} is in our case  the value of the reflected mass.\\
 %
-In the filter, the sliding window can be a scalar (in which case the same window size will be scanned for all dimensions) or an array (in which case separate scan sizes will be run for each dimension). The advantage of this filter is that it can do multidimensional filtering. Here the signal is two dimensional, i.e. with two independent variables, namely the linear axis ($\mathrm{q_1}$) and the elbow ($\mathrm{q_4}$). Therefore the window-size should have two entries (or one if one wants unidimensional filtering).
+In the filter, the sliding window can be a scalar (in which case the same window size will be scanned for all dimensions) or an array (in which case separate scan sizes will be run for each dimension). The advantage of this filter is that it can do multidimensional filtering. Here the signal is two dimensional, i.e. with two independent variables, namely the linear axis ($\mathrm{q_1}$) and the fourth joint ($\mathrm{q_4}$). Therefore the window-size should have two entries (or one if one wants unidimensional filtering).
 
 
 Here, two examples are explained for better understanding:
 \begin{enumerate}
-	\item In the first case (Fig. \ref{fig:maxminfilter1}) the window size is set to $[dim_{max_{1}}, \ 1]$. The local minimum is found in each self-motion manifold slice, for constant positions of the elbow.
+	\item In the first case (Fig. \ref{fig:maxminfilter1}) the window size is set to $[dim_{max_{1}}, \ 1]$. The local minimum is found in each self-motion manifold slice, for constant positions of the fourth joint.
 	\item In the second case (Fig. \ref{fig:maxminfilter2}) the window size is set to $[1, \ dim_{max_{2}}]$. The local minimum is found in each self-motion manifold slice, for constant positions of the linear axis.
 	
 \end{enumerate}
@@ -254,15 +254,15 @@ Where $dim_{max_{i}}$ is the data length of the $ith$ dimension. It is clear to 
 
 \begin{figure}[htb]
 	\centerline{
-		\includegraphics[width=0.7\textwidth]{images/global_q4_cte_v2.eps}}
+		\includegraphics[width=0.7\textwidth]{images/global_q4_cte_v2_new.eps}}
 	\caption{Plot of the reflected mass in x direction against the self-motion
-		manifold coordinates. Local minima found in each self-motion manifold slice for each elbow position. }
+		manifold coordinates. Local minima found in each self-motion manifold slice for each fourth joint angle. }
 	\label{fig:maxminfilter1}
 \end{figure}
 
 \begin{figure}[htb]
 	\centerline{
- 		\includegraphics[width=0.7\textwidth]{images/global_q1_cte_v2.eps}}
+ 		\includegraphics[width=0.7\textwidth]{images/global_q1_cte_v2_new.eps}}
 	\caption{ Plot of the reflected mass in x direction against the self-motion
 		manifold coordinates. Local minima found in each self-motion manifold slice for each linear axis position. }
 	\label{fig:maxminfilter2}
@@ -294,7 +294,7 @@ Although intuitive and easy to implement it does not work well with pseudo-monot
 
 %The advantage of this algorithm is mainly the speed {\color{red} FIND A BETTER ADVANTAGE because if this approach is only for offline optimization actually it does not important that much the speed!! }  because it requires, in the worst case, 3 comparisons per element.
 
-The standard way to find the minima of a given grid is with small sliding windows. A more accurate way is: First finding all the minima in each self-motion manifold slice with constant position of the elbow (see Fig. \ref{fig:maxminfilter1}). Secondly doing an equivalent minimization for each position of the linear axis (see Fig. \ref{fig:maxminfilter2}). 
+The standard way to find the minima of a given grid is with small sliding windows. A more accurate way is: First finding all the minima in each self-motion manifold slice with constant position of the fourth joint (see Fig. \ref{fig:maxminfilter1}). Secondly doing an equivalent minimization for each position of the linear axis (see Fig. \ref{fig:maxminfilter2}). 
 And finally getting the common minima from both sets. This strategy was implemented here, and performs better than simply filtering with small sliding windows. 
 
 \paragraph{Continuity of the Global Minimum}

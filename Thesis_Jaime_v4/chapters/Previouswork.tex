@@ -154,7 +154,7 @@ The goal position is always the local minimum, so the problem of having low torq
 For the 7-DOF LWR a  one-dimension null space for the Jacobian   was previously studied at DLR.  
 The select-function that returns the velocity of the 7 rotational joints in the one-dimensional null space for non-singular configurations was found. Integrating this velocity over time results in all the joint positions corresponding to null space motions.
 %
-Considering the  8-DOF, an algorithm to determine a grid of the self-motion manifold, was provided in \cite{fabianthesis}. The redundant joints considered in this work are the linear axis and the elbow, $q_1$ and $q_4$ respectively. In the algorithm first an integration of a self-motion manifold slice is done. A velocity with the form (\ref{eq:smms_velocity}) is used for this first step. 
+Considering the  8-DOF, an algorithm to determine a grid of the self-motion manifold, was provided in \cite{fabianthesis}. The redundant joints considered in this work are the linear axis and the fourth joint, $q_1$ and $q_4$ respectively. In the algorithm first an integration of a self-motion manifold slice is done. A velocity with the form (\ref{eq:smms_velocity}) is used for this first step. 
 
 \begin{equation}
 \dot{\mathbf{q}}_* =\begin{pmatrix}0 \\ \vdots  \\ *\\ \vdots\\ *\end{pmatrix}.

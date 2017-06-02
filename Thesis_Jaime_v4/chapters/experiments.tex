@@ -24,7 +24,7 @@ The RG is implemented on the final controller, so the first parameters to tune d
 
 
 
-Here, the three main Cartesian directions (x,y,z) are used separately as direction to minimize the reflected mass. These directions are in the world frame. In Fig. \ref{fig:reflected_mass_cart_directions}  one can see that the reflected mass in the x- and z-direction depends mainly on the elbow ($\mathrm{q_4}$). In the y-direction it depends on both, which is to be expected since the linear axis ($\mathrm{q_1}$) is orientated along the y-direction. Looking at the axes of the three grids in Fig. \ref{fig:reflected_mass_cart_directions} one can notice how the linear axis' range is approximately one, while for the elbow it is around 10. In these figures no joint limits are considered. But even considering them, there is a significant difference between the scales of both joints. Therefore, non-weighted  optimization ($\mathrm{WF = 0.5}$) leads to a greater displacement of the linear axis in the grid. \\
+Here, the three main Cartesian directions (x,y,z) are used separately as direction to minimize the reflected mass. These directions are in the world frame. In Fig. \ref{fig:reflected_mass_cart_directions}  one can see that the reflected mass in the x- and z-direction depends mainly on the fourth joint ($\mathrm{q_4}$). In the y-direction it depends on both, which is to be expected since the linear axis ($\mathrm{q_1}$) is orientated along the y-direction. Looking at the axes of the three grids in Fig. \ref{fig:reflected_mass_cart_directions} one can notice how the linear axis' range is approximately one, while for the fourth joint it is around 10. In these figures no joint limits are considered. But even considering them, there is a significant difference between the scales of both joints. Therefore, non-weighted  optimization ($\mathrm{WF = 0.5}$) leads to a greater displacement of the linear axis in the grid. \\
 %
 \begin{figure}[htp!]
 	\centering	
@@ -108,7 +108,7 @@ This damping also helps to decrease the oscillations inherent to the GD method.
 The  experiment carried out is the motion of the EE along the linear axis, which shows the full potential of minimizing with a LWR mounted on a linear axis.
 First of all different proportional gains (10, 20, 30 and 100) are tested. For each of these gains (common for all joints) different step sizes are tested. Starting from the optimal step size of 5e-2 s a ten times bigger and ten times smaller step size are tested. For all of these combinations of gains and step size, five different numbers of iteration are used: 4, 10, 20, 50 and 100.
 The motion consists of moving the EE 60 cm  in the y-direction with Cartesian control.
-A larger distance was not chosen  because the original robot behavior tends to stretch the elbow completely,  leading to singularities. 
+A larger distance was not chosen  because the original robot behavior tends to extend the elbow completely,  leading to singularities. 
 %As explained in the previous section the minimization in z-direction caused the robotic arm to stretch too much, reaching singularities. Although setting higher conservative joints limits will avoid singularities the minimization is then very small and to show better the behavior of the controller we will limit the experiments to the case in y-direction. 
 %TODO:try to do minimization along x and z dynamic just to show that the previous parameters work} {\color{red} delete this paragraph  if I have time to do more experiments and put them here
  Firstly the previously obtained  parameters from Table 	\ref{table:table_SC} are tested at high speeds, and later at lower speeds. At high speeds a maximum velocity of 1 $\mathrm{m/s}$ is achieved during the motion with a maximum acceleration of 10 $\mathrm{m/s^{2}}$, and at lower speeds the maximum velocity is 0.2 $\mathrm{m/s}$, with the same maximum acceleration.
@@ -250,7 +250,7 @@ In Fig. \ref{fig:SmuExp_SafetyCurve_vmax05} the reflected masses are depicted, t
 %
 The points where the velocities exceed slightly the allowed maximum correspond to the mentioned peaks from Fig. \ref{fig:SmuExp_Vel_vmax05}. The SMU usually starts limiting the velocity only when this reaches the safety curve.  However, this causes a big overshooting. These velocities show also oscillations close to the safety curve, but these oscillations may be decreased using a filter. To ensure a safe motion  during the overshooting, one may set a conservative safety curve, with lower limits than the original one. Another option is to start limiting the velocity earlier. In the integration of the SMU in the Cartesian interpolator, this can be understood as using a smoother signal, instead of a step, as input to the interpolator.    Therefore, the limitation of the velocity is smoother and no overshooting is shown. In Fig. \ref{fig:SmuExp_SafetyCurve_vmax05} this earlier limitation appears when the blue curves start to separate from the black one. This approach is preferred for this experiment since the overshooting is much lower than if the velocities start being limited when the safety curve is reached. 
 
-\begin{figure}[htp!]
+\begin{figure}[H]
 	\centering	
 	\subfigure[]{\label{fig:SmuExp_Vel_CM2_POI1_vmax05}}{\includegraphics[height=0.55\textwidth]{images/SMU_test_3/SmuExp_Vel_CM2_POI1_vmax05_ubuntu.eps}} 	\subfigure[]{\label{fig:SmuExp_Vel_CM3_POI4_vmax05}}{\includegraphics[height=0.55\textwidth]{images/SMU_test_3/SmuExp_Vel_CM3_POI4_vmax05_ubuntu.eps}} 	
 		\caption{Absolute velocities in the EE moving along the linear axis 60 cm (Fig. \ref{fig:SmuExp_Vel_CM2_POI1_vmax05}), and moving back to the original position (Fig. \ref{fig:SmuExp_Vel_CM3_POI4_vmax05}). First is shown the standard motion of the robot, then with velocity limitation from the SMU and then with both the numerical and analytical approaches integrated together with the SMU.}
@@ -260,7 +260,7 @@ The points where the velocities exceed slightly the allowed maximum correspond t
 
 
 
-\begin{figure}[htp!]
+\begin{figure}[H]
 	\centering	
 	\subfigure[]{\label{fig:SmuExp_SafetyCurve_CM2_POI1_vmax05}}{\includegraphics[height=0.55\textwidth]{images/SMU_test_3/SmuExp_SafetyCurve_CM2_POI1_vmax05_thin_ubuntu.eps}} 	\subfigure[]{\label{fig:SmuExp_SafetyCurve_CM3_POI4_vmax05}}{\includegraphics[height=0.55\textwidth]{images/SMU_test_3/SmuExp_SafetyCurve_CM3_POI4_vmax05_thin_ubuntu.eps}} 	
 	\caption{Velocities of the EE and reflected masses the end-effector, when the robot is moving along the linear axis 60 cm (Fig. \ref{fig:SmuExp_SafetyCurve_CM2_POI1_vmax05}), and moving back to the original position (Fig. \ref{fig:SmuExp_SafetyCurve_CM3_POI4_vmax05}). The safety curves for each motion are also depicted.}  
