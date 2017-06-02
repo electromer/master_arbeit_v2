@@ -32,7 +32,7 @@ where  $\mathrm{k}$ is again a positive scaling gain and $\mathrm{\nabla m_u(\ma
 %
 %
 In (\ref{eq:RG_dq}) the Moore-Penrose pseudoinverse is firstly chosen for the projector. 
-However, many different projectors can be used. As an alternative to the previous one, a projector based on the mass weighted pseudoinverse, is also considered here. The motivation to use this projector is the positive results obtained in \cite{Nemec_2} for optimization. The null space projector has to be nonnegative definite to ensure that, for any $\mathrm{k > 0}$, the mass is minimized. A proof of this can be found in \cite{yoshikawa}. Using the Moore-pseudoinverse, the null space projector is always positive definite, but using the mass weighted pseudoinverse the null space projector is not symmetrical, hence non-definite. Therefore, in order to ensure minimization, it is necessary to post-multiplicate the mass weighted projector by the inverse of the mass matrix, $\mathbf{M}^{-1}$  \cite{Nemec}. The null space velocity is in this case: 
+However, many different projectors can be used. As an alternative to the previous one, a projector based on the mass weighted pseudoinverse, is also considered here. The motivation to use this projector is the positive results obtained in \cite{Nemec_2} for optimization. The null space projector has to be nonnegative definite to ensure that, for any $\mathrm{k > 0}$, the mass is minimized. A proof of this can be found in \cite{yoshikawa}. Using the Moore-pseudoinverse, the null space projector is always positive definite, but using the mass weighted pseudoinverse the null space projector is not symmetrical, hence non-definite. Therefore, in order to ensure minimization, it is necessary to post-multiply the mass weighted projector by the inverse of the mass matrix, $\mathbf{M}^{-1}$  \cite{Nemec}. The null space velocity is in this case: 
 
 \begin{equation}
 	\mathbf{\dot{q}}_{ns} =  - k (\mathbf{I} -  \mathbf{J}^{\#MT} \mathbf{J} ) \mathbf{M}^{-1} \nabla {m}_u(\mathbf{q}). \label{eq:RG_dq_nemec}
@@ -79,7 +79,7 @@ where $\mathbf{J}_{nr}$ and $\mathbf{J}_{r}$ are the Jacobians associated to the
 
 where $\mathrm{k}$ is the already mentioned scaling factor. It is clear to see that if $\mathbf{J}_{nr}$ does not lose rank, its inversion is much more efficient than the computation of the $\mathrm{8x8}$ pseudoinverse in the PG method. Implementing both methods, PG and RG, in a MATLAB script shows that: Using the Moore-Penrose projector, the PG  requires approximately $2*10^{-3}$ s, while RG  needs only $2.5*10^{-4}$ s. The PG with the mass weighted projector needs approximately $3*10^{-3}$ s. The speed of convergence is hard to measure because the number of iterations to reach a minimum is different in the three approaches.
 As mentioned in \cite{reduced_gradient}, PG and RG converge in different directions as soon as the redundancy degree is more than one. In Fig. \ref{fig:diff_GD_v2} one can see how the three approaches lead to different minima.  In \cite{Nemec_2}, the mass weighted projector for PG, lead to good minimization when implementing it for obstacle avoidance.  
-However in this case, the mass weighted projector tends to minimize mainly w.r.t. the elbow. This might be due to the prerotation of the gradient before projecting it in the null space (see (\ref{eq:RG_dq_nemec})). Although the dimensions of both redundant joints are different, it is in general preferred to have small displacements in the linear axis than big ones in the elbow. In the Fig. \ref{fig:diff_GD_v2}, RG and PG with the Moore-Penrose pseudoinverse reach a minimum moving the linear axis approximately 0.2 m, while the PG with the mass weighted pseudoinverse needs to move approximately 60 degrees the fourth joint to achieve a minimum. To better exploit both degrees of freedom of the robot, the PG approach with the mass weighted pseudoinverse is discarded. 
+However in this case, the mass weighted projector tends to minimize mainly w.r.t. the elbow. This might be due to the pre-rotation of the gradient before projecting it in the null space (see (\ref{eq:RG_dq_nemec})). Although the dimensions of both redundant joints are different, it is in general preferred to have small displacements in the linear axis than big ones in the elbow. In the Fig. \ref{fig:diff_GD_v2}, RG and PG with the Moore-Penrose pseudoinverse reach a minimum moving the linear axis approximately 0.2 m, while the PG with the mass weighted pseudoinverse needs to move approximately 60 degrees the fourth joint to achieve a minimum. To better exploit both degrees of freedom of the robot, the PG approach with the mass weighted pseudoinverse is discarded. 
  \\ 
 Being RG analytically simpler and numerically faster, this is the method chosen to continue in this thesis. 
 
@@ -232,7 +232,7 @@ Since the minimization is local one must be careful when integrating the velocit
 
 The algorithm runs $\mathrm{n_{max}}$ iterations before sending a commanded goal position. 
 The higher the number of iterations the more likely is to send a local minimum as goal position. In all tested cases (see Section   \ref{subsec:compare_local_minim_methods})  the local minimum was found in less that 100 iterations. So practically setting the number of iterations to 100 ensures that the goal position will be a local minimum. The higher $\mathrm{n_{max}}$, and the further from the minimum, the higher will be the commanded torque, and the faster it will converge to the local minimum.
-However, a high number of iterations has two disadvantages. First of all, in each iteration some matrices have to be computed and inverted. This causes low computational efficiency. This may be solved by more efficient ways to compute these matrices and their inverses. However, the main problem of a high number of iterations is that the robot may go through local maxima when going to the local minimum This is explained in Fig.\ref{fig:bad_case_3d} and Fig.\ref{fig:bad_case_contour}.\\
+However, a high number of iterations has two disadvantages. First of all, in each iteration some matrices have to be computed and inverted. This causes low computational efficiency. This may be solved by more efficient ways to compute these matrices and their inverses. However, the main problem of a high number of iterations is that the robot may go through local maxima when going to the local minimum This is explained in Fig. \ref{fig:bad_case_3d} and Fig. \ref{fig:bad_case_contour}.\\
 %
 \begin{figure}[H]
 	\centerline{
@@ -243,7 +243,7 @@ However, a high number of iterations has two disadvantages. First of all, in eac
 \begin{figure}[H]
 	\centerline{
 		\includegraphics[width=1.4\textwidth]{images/bad_case_contour_ubuntu.eps}}
-	\caption{Isocontour lines for the comparison between the trajectory described by the robot for low number of iterations (red) and for high number of iterations (black). The color-bar indicates the different masses.}
+	\caption{Contour lines for the comparison between the trajectory described by the robot for low number of iterations (red) and for high number of iterations (black). The color-bar indicates the different masses.}
 	\label{fig:bad_case_contour}
 \end{figure}
 %
@@ -404,13 +404,13 @@ The relation chosen to weight both joints is a linear one. So the new joint velo
 
 
 where $\mathrm{WF \in [0,1]}$, is the weighing factor variable.
-When $\mathrm{WF=1}$ the minimization is done only w.r.t. the linear axis , and when $\mathrm{WF=0}$ only by the elbow (see Fig.\ref{fig:wf}) will move.
+When $\mathrm{WF=1}$ the minimization is done only w.r.t. the linear axis , and when $\mathrm{WF=0}$ only by the elbow (see Fig. \ref{fig:wf}) will move.
 For the  remaining experiments no weighting is considered, which can be regarded as $\mathrm{WF=1}$.
 
 \begin{figure}[!h]
 	\centering	
 	\subfigure[]{\label{fig:wf_1}}{\includegraphics[height=0.5\textwidth]{images/wf1.eps}} 	\subfigure[]{\label{fig:wf_0}}{\includegraphics[height=0.5\textwidth]{images/wf0.eps}} 	 	
-	\caption{Fig.\ref{fig:wf_1}:  Minimization for weighting factor of 1 (only  linear axis motion). \\ Fig.\ref{fig:wf_0}: Minimization for weighting factor of 0 (only elbow motion). }
+	\caption{Fig. \ref{fig:wf_1}:  Minimization for weighting factor of 1 (only  linear axis motion). \\ Fig. \ref{fig:wf_0}: Minimization for weighting factor of 0 (only elbow motion). }
 	\label{fig:wf}
 \end{figure}
 
@@ -426,14 +426,14 @@ In the numerical approach $\mathrm{{\dot{q}}_{1}}$ and $\mathrm{{\dot{q}}_{4}}$ 
 
 Previously the velocity has been normalized before integrating. Applying the GD, it is likely that the minimum is first reached in one dimension, then in the other one. An example of this is depicted in Fig. \ref{fig:weird case}. In  Fig. \ref{fig:gradients_weird_case} one can see how the gradients w.r.t. the linear axis %($\frac{\partial {m_u(\mathbf{q})}}{\partial{\mathbf{q_{1}}}}$) 
 and the elbow %($\frac{\partial {m_u(\mathbf{q})}}{\partial{\mathbf{q_{4}}}}$) 
-decrease within time. At 114.45 s a minimum along the linear axis, but the gradient w.r.t. the elbow is still not zero. When this occurs there is an abrupt change in the joint velocities, see Fig.\ref{fig:velocities_weird_case}.
+decrease within time. At 114.45 s a minimum along the linear axis, but the gradient w.r.t. the elbow is still not zero. When this occurs there is an abrupt change in the joint velocities, see Fig. \ref{fig:velocities_weird_case}.
 This is because when the gradient w.r.t. the linear axis %$\frac{\partial {m_u(\mathbf{q})}}{\partial{\mathbf{q_{1}}}} = 0$ 
 reaches zero, the minimization is done inside a self-motion manifold slice for constant position of the linear axis.
 
 \begin{figure}[!htb]
 	\centering	
 	\subfigure[]{\label{fig:gradients_weird_case}}{\includegraphics[height=0.46\textwidth]{images/gradients_weird_case.eps}} 	\subfigure[]{\label{fig:velocities_weird_case}}{\includegraphics[height=0.46\textwidth]{images/velocities_weird_case.eps}} 	 	
-	\caption{Fig.\ref{fig:gradients_weird_case}: Gradient of the reflected mass w.r.t. both redundant joints during the minimization. \\ Fig.\ref{fig:velocities_weird_case}: Normalized joint velocities before and after the minimum in a self-motion manifold is found. }
+	\caption{Fig. \ref{fig:gradients_weird_case}: Gradient of the reflected mass w.r.t. both redundant joints during the minimization. \\ Fig.  \ref{fig:velocities_weird_case}: Normalized joint velocities before and after the minimum in a self-motion manifold is found. }
 	\label{fig:weird case}
 \end{figure} 
 
@@ -511,12 +511,12 @@ A non-normalized velocity will be considered in  Chapter  \ref{ch:experiments}.
 \label{subsec:wf_JLA}
 
 It is interesting to see how the two-dimensional minimization problem can be divided in two one-dimensional minimization problems by switching the weighting factor in (\ref{eq:decoupling_q1}) and (\ref{eq:decoupling_q4}). Starting  $\mathrm{WF  = 0}$  one may minimize the reflected mass inside the self-motion manifold slice for the current linear axis position. Once the minimum in the self-motion manifold slice is found, the weighting factor is switched to $0$, and the minimum along the linear axis is searched for. These two steps may be performed till a local minimum in both dimensions is found. 
-Clearly, a minimum in both dimensions corresponds to a minimum on the grid. But not necessarily to the closest minimum, neither to the same minimum than the classic two-dimensional minimization gives. In  Fig.\ref{fig:1D} one can see how starting in the same configuration the strategy using this \textit{decoupling} (in black) and the original one without decoupling the minimization (in red), reach different local minima. In this example the minimum reached without decoupling strategy has a lower mass. But in other scenario it could be vice versa, i.e. the \textit{decoupling}  strategy reaches a lower minimum. 	Therefore, this is no criterion to compare both strategies.
+Clearly, a minimum in both dimensions corresponds to a minimum on the grid. But not necessarily to the closest minimum, neither to the same minimum than the classic two-dimensional minimization gives. In  Fig. \ref{fig:1D} one can see how starting in the same configuration the strategy using this \textit{decoupling} (in black) and the original one without decoupling the minimization (in red), reach different local minima. In this example the minimum reached without decoupling strategy has a lower mass. But in other scenario it could be vice versa, i.e. the \textit{decoupling}  strategy reaches a lower minimum. 	Therefore, this is no criterion to compare both strategies.
 %
 \begin{figure}[!htb]
 	\centerline{
 		\includegraphics[width=0.7\textwidth]{images/1D.eps}}
-	\caption{Isocontour lines for the comparison between the trajectory obtained with the minimization strategy in 2D (red) and with the minimization strategy in 1D (black). The color-bar indicates the different masses.}
+	\caption{Contour lines for the comparison between the trajectory obtained with the minimization strategy in 2D (red) and with the minimization strategy in 1D (black). The color-bar indicates the different masses.}
 	\label{fig:1D}
 \end{figure} 
 %
@@ -638,7 +638,7 @@ Besides the advantage that the minimization and the joint limit avoidance do not
 
 
 
-  In the Fig.\ref{fig:wf_for_jla} this approach is depicted. The non-colored part of the grid represents the area beyond the joint limits. The robot starts in a configuration beyond the limits, so first the repulsive potential takes it to the reachable area. Once there, the minimization is done without decoupling. When the limits are reached again,  the minimization is done w.r.t. the elbow only, till the local minimum is found. In Fig.\ref{fig:wf_for_jla} one can see how there is a  small displacement of the linear axis when it reaches the non-reachable area. Due to its inertia, the linear axis trespass the joints limits, but the potential pushes it quickly to the reachable area.
+  In the Fig. \ref{fig:wf_for_jla} this approach is depicted. The non-colored part of the grid represents the area beyond the joint limits. The robot starts in a configuration beyond the limits, so first the repulsive potential takes it to the reachable area. Once there, the minimization is done without decoupling. When the limits are reached again,  the minimization is done w.r.t. the elbow only, till the local minimum is found. In Fig. \ref{fig:wf_for_jla} one can see how there is a  small displacement of the linear axis when it reaches the non-reachable area. Due to its inertia, the linear axis trespass the joints limits, but the potential pushes it quickly to the reachable area.
 
 
 
@@ -849,6 +849,21 @@ There are several ways to compute a null space velocity that minimizes the refle
 
 
 
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+% \usepackage{multirow}
+% \usepackage[table,xcdraw]{xcolor}
+% If you use beamer only pass "xcolor=table" option, i.e. \documentclass[xcolor=table]{beamer}
+%\begin{table}[]
+%	\centering
+%	\caption{My caption}
+%	\label{my-label}
+%
+%\end{table}
+
+
+
+
 % \subsection{Comparison of the Local Minimization Methods}
  \label{subsec:compare_local_minim_methods}
  
@@ -863,30 +878,30 @@ There are several ways to compute a null space velocity that minimizes the refle
 	\caption{Comparison Line Search methods}
 	\label{table:comp_ls_methods} 
 	\resizebox{\textwidth}{!}{%
-		\begin{tabular}{|c|c|c|c|c|c|c|c|}
-			\hline 
-			&                                      & \multicolumn{2}{c|}{\textbf{GD}}                             & \multicolumn{2}{c|}{\textbf{DFP}}                            & \multicolumn{2}{c|}{\textbf{BFGS}}                           \\ \cline{3-8} 
-			\multirow{-2}{*}{\textbf{Initial\ 
-					configuration}} & \multirow{-2}{*}{\textbf{Direction}} & \textbf{Ending} & \textbf{Iterations}                          & \textbf{Ending} & \textbf{Iterations}                          & \textbf{Ending} & \textbf{Iterations}                          \\ \hline
-			A                                                & x                                    & 3 zigzags              & 94                                  & 3 zigzags              & 81                                  & 3 zigzags              & \cellcolor[HTML]{34FF34}\textbf{77} \\ \hline
-			B                                                & x                                    & 3 zigzags              & 88                                  & CJL                    & 68                                  & 2 zigzags              & \cellcolor[HTML]{34FF34}\textbf{67} \\ \hline
-			C                                                & z                                    & 2 zigzags              & \cellcolor[HTML]{34FF34}\textbf{30} & 2 zigzags              & \cellcolor[HTML]{34FF34}\textbf{30} & 2 zigzags              & 32                                  \\ \hline
-			D                                                & z                                    & 2 zigzags              & 30                                  & 2 zigzags              & 27                                  & minim. found           & \cellcolor[HTML]{34FF34}\textbf{23}                                  \\ \hline
-			E                                                & y                                    & minim. found           & \cellcolor[HTML]{34FF34}\textbf{32} & minim. found           & 38                                  & minim. found           & 38                                  \\ \hline
-			F                                                & y                                    & minim. found           & 37                                  & minim. found           & \cellcolor[HTML]{34FF34}\textbf{23} & 2 zigzags              & \cellcolor[HTML]{34FF34}\textbf{23} \\ \hline
-			
-			
+		\begin{tabular}{@{}|c|c|c|c|c|c|c|c|@{}}
+			\toprule
+			&                                      & \multicolumn{2}{c|}{\textbf{GD}}                                                                                                          & \multicolumn{2}{c|}{\textbf{DFP}}                                                                                                          & \multicolumn{2}{c|}{\textbf{BFGS}}                                                                                                        \\ \cmidrule(l){3-8} 
+			\multirow{-2}{*}{\textbf{\begin{tabular}[c]{@{}c@{}}Initial \\ configuration\end{tabular}}} & \multirow{-2}{*}{\textbf{Direction}} & \textbf{\begin{tabular}[c]{@{}c@{}}Ending\\ reason\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Iterations\\ required\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Ending \\ reason\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Iterations\\ required\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Ending\\ reason\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Iterations\\ required\end{tabular}} \\ \midrule
+			A                                                                                           & x                                    & 3 zigzags                                                        & 94                                                                     & 3 zigzags                                                         & 81                                                                     & 3 zigzags                                                        & \cellcolor[HTML]{34FF34}\textbf{77}                                    \\ \midrule
+			B                                                                                           & x                                    & 3 zigzags                                                        & 88                                                                     & CJL                                                               & 68                                                                     & 2 zigzags                                                        & \cellcolor[HTML]{34FF34}\textbf{67}                                    \\ \midrule
+			C                                                                                           & z                                    & 2 zigzags                                                        & \cellcolor[HTML]{34FF34}\textbf{30}                                    & 2 zigzags                                                         & \cellcolor[HTML]{34FF34}\textbf{30}                                    & 2 zigzags                                                        & 32                                                                     \\ \midrule
+			D                                                                                           & z                                    & 2 zigzags                                                        & 30                                                                     & 2 zigzags                                                         & 27                                                                     & minim. found                                                     & 23                                                                     \\ \midrule
+			E                                                                                           & y                                    & minim. found                                                     & \cellcolor[HTML]{34FF34}\textbf{32}                                    & minim. found                                                      & 38                                                                     & minim. found                                                     & 38                                                                     \\ \midrule
+			F                                                                                           & y                                    & minim. found                                                     & 37                                                                     & minim. found                                                      & \cellcolor[HTML]{34FF34}\textbf{23}                                    & 2 zigzags                                                        & \cellcolor[HTML]{34FF34}\textbf{23}                                    \\ \bottomrule
+
+
+
 			\multicolumn{8}{l}{\textbf{GD}: Gradient Descent}\\
 			\multicolumn{8}{l}{\textbf{DFP}: Davidon–Fletcher–Powell}\\
 			\multicolumn{8}{l}{\textbf{BFGS}: Broyden–Fletcher–Goldfarb–Shanno}\\
-			\multicolumn{8}{l}{\textbf{Ending}: number of zigzags before sum of both gradients below threshold ($\mathrm{\epsilon=0.1}$)}\\
+			\multicolumn{8}{l}{\textbf{Ending Reason}: number of zigzags before sum of both gradients below threshold ($\mathrm{\epsilon=0.1}$)}\\
 			\multicolumn{8}{l}{\textbf{CJL}: Conservative Joint Limits reached}\\
-		\end{tabular}%
-			} 
+		\end{tabular}
+	}
 \end{table}
 
 
-In Tab.\ref{table:comp_ls_methods} the results of tests for different initial configurations and different reflected directions are listed. There is a comparison of the GD and both QNM. As already mentioned CGD methods lead to worse convergence than GD. The Trust Region methods and the NM are not implementable for both approaches, analytical and numerical.
+In Table \ref{table:comp_ls_methods} the results of tests for different initial configurations and different reflected directions are listed. There is a comparison of the GD and both QNM. As already mentioned CGD methods lead to worse convergence than GD. The Trust Region methods and the NM are not implementable for both approaches, analytical and numerical.
 The tested cases were chosen so the initial configuration is relatively far from the minimum, because close to a minimum all methods perform similarly.
 The QNM, and in particular BFGS, are in most of the times faster than GD. This is to be expected, since BFGS is an improved version of DFP.  In two tests  the GD shows faster convergence along the y- and z-direction. This is possible  because these grids show contour lines for the local minima. Therefore, these methods reach different minima. However, in the x-direction the grid does not show these countour lines, and all the methods converge to the same minimum. In this direction it is clear how the QNM converge faster than the GD.
  However, the difference is not significant. Theoretically the convergence should be much faster for the QNM but the need to restart them often, as explained in the Section \ref{subsubsec:loss_pdness}, causes the convergence rate to decrease. 

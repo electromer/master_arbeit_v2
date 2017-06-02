@@ -6,7 +6,7 @@
 The experiments carried out can be divided into experiments where the end-effector (EE) is not moving  and others where the EE is following a trajectory. 
 For the static case EE (Section \ref{sec:static_case}), the three Cartesian directions are chosen to minimize the reflected mass . The goal of the tuning is to find a common set of parameters for the minimization along all three directions, including the effect of external forces. If accomplished, it would not be necessary to change the parameters of the controller when the robot changes its direction of motion.\\
 %
-For the dynamic cases (Section \ref{sec:dynamic_case}) the  experiment is the motion of the robot along the linear axis. This experiment is performned at low and high speeds, 0.2 and 1 $\mathrm{m/s}$ respectively. 
+For the dynamic cases (Section \ref{sec:dynamic_case}) the  experiment is the motion of the robot along the linear axis. This experiment is performed at low and high speeds, 0.2 and 1 $\mathrm{m/s}$ respectively. 
 The aim is to find a set of parameters that performs well in all cases, and if possible, a common set of parameters for both approaches, numerical and analytical.
 Finally, both approaches are tested integrated together with the Safe Motion Unit (SMU). 
 
@@ -81,24 +81,19 @@ This damping also helps to decrease the oscillations inherent to the GD method.
 
 \begin{table}[]
 	\centering
-	\caption{Common optimal parameters for the static case in the x-, y- and z-direction}
+	\caption{Parameters for the static case in the x-, y- and z-direction}
 	\label{table:table_SC}
-	\begin{tabular}{|c|c|c|c|c|c|c|c|}
-		\hline
-		\textbf{Direction}          & \textbf{Approach}   & \textbf{Step size} & \textbf{Nº iterations} & \textbf{$\mathrm{\zeta}$} & \textbf{$\mathrm{\gamma}$} & \textbf{$\mathrm{K_p}$}  \\ \hline
-		\multirow{2}{*}{\textbf{X}} & \textbf{Numerical}  & 5e-4 to 5e-3       & 10-30                          & 0.4/1                   & -             & 10-100                    \\ 
-		& \textbf{Analytical} & $\sim$ 5e-3       & 2-4                        & 0.4/1                   & 1e-3       & 10-100                          \\ \hline
-		\multirow{2}{*}{\textbf{Y}} & \textbf{Numerical}  & 5e-4 to 5e-3       & 10-30                          & 0.4/1                  & -                    & 10-100               \\ 
-		& \textbf{Analytical} & $\sim$ 5e-3       & 2-4                             & 0.4/1                  & 1e-2        & 10-100                        \\ \hline
-		\multirow{2}{*}{\textbf{Z}} & \textbf{Numerical}  & 5e-4 to 5e-3       & 10-30                          & 0.4/1                   & -                         & 10-100           \\ 
-		& \textbf{Analytical} & $\sim$ 5e-3       & 2-4                             & 0.4/1                  & 1e-2      & 10-100         \\ \hline                 
+	\begin{tabular}{@{}|c|c|c|c|c|c|c|@{}}
+		\toprule
+		\textbf{Direction}          & \textbf{Approach}   & \textbf{Step size} & \textbf{Number iterations} &\textbf{$\mathrm{\zeta}$} & \textbf{$\mathrm{\gamma}$} & \textbf{$\mathrm{K_p}$}\\ \midrule
+		\multirow{2}{*}{\textbf{X}} & \textbf{Numerical}  & 5e-4 to 5e-3       & 10-30                      & \multirow{2}{*}{0.4/1} & -     & \multirow{2}{*}{10-100} \\ \cmidrule(lr){2-4} \cmidrule(lr){6-6}
+		& \textbf{Analytical} & 5e-3               & 2-4                        &                        & 1e-3  &                         \\ \midrule
+		\multirow{2}{*}{\textbf{Y}} & \textbf{Numerical}  & 5e-4 to 5e-3       & 10-30                      & \multirow{2}{*}{0.4/1} & -     & \multirow{2}{*}{10-100} \\ \cmidrule(lr){2-4} \cmidrule(lr){6-6}
+		& \textbf{Analytical} & 5e-3               & 2-4                        &                        & 1e-2  &                         \\ \midrule
+		\multirow{2}{*}{\textbf{Z}} & \textbf{Numerical}  & 5e-4 to 5e-3       & 10-30                      & \multirow{2}{*}{0.4/1} & -     & \multirow{2}{*}{10-100} \\ \cmidrule(lr){2-4} \cmidrule(lr){6-6}
+		& \textbf{Analytical} & 5e-3               & 2-4                        &                        & 1e-2  &                         \\ \bottomrule
 	\end{tabular}
 \end{table}
-
-
-
-
-
 
 
 
@@ -143,7 +138,7 @@ The minimized reflected mass is the first result that has to be compared. For th
 \end{figure}
 
 Another criterion is the computational efficiency, and here the number of iterations plays the biggest role. The numerical approach is more computationally expensive than the analytical and care must be taken when choosing $\mathrm{n_{max}}$.  For the numerical approach with $\mathrm{n_{max} > 30}$, the frequency of the algorithm has to be decreased from 1kHz to 100Hz.  With the algorithm running at 1 kHz, the load in one core of the CPU is up to 60\% for $\mathrm{n_{max} = 30}$. While for a low number of iterations ($\mathrm{n_{max} \approx 4} $) this load is around 5\%.  At 100Hz and $\mathrm{n_{max} = 100}$ the load of the CPU is between 50 and 70\%.  Furthermore, for  $\mathrm{n_{max} \ge 10}$,  $\mathrm{K_p=100}$ and step size 5e-3 s,  there is small overshooting (see Fig. \ref{fig:kp100dt5e-3}). This occurs for both approaches in the linear axis, even for $\mathrm{\zeta = 1}$. In the same Fig. \ref{fig:kp100dt5e-3} one can see how when the number of iterations is too low the linear axis ends farther from the EE (which in this case is in 0.6 m). In the Fig. \ref{fig:mass_kp100dt5e-3} this corresponds to a higher mass at the end of the motion. 
-For $\mathrm{K_p} \approx 10 - 30$, the results are very similar as long as we limit the output torques from the controller to $\pm$20 Nm. With these low gains the minimization is only slightly worse than with higher gains. Meaning that the numerical approach is more robust to the tuning of the proportional gains, and also meaning that gains between 30 and 100 are optimal.
+For $\mathrm{K_p} \approx 10 - 30$, the results are very similar as long as we limit the output torques from the controller to $\pm$20 Nm. With these low gains the minimization is only slightly worse than with higher gains. Meaning that the numerical approach is more robust to the tuning of the proportional gains, and also meaning that gains between 30 and 100 lead to good behavior.
 Of course this robustness would be lower if starting very far from the minimum. With  high $\mathrm{n_{max}}$, and high $\mathrm{K_p}$, the robot would have high initial torques that could cause higher overshooting than the one showed in Fig. \ref{fig:kp100dt5e-3}. For this reason gains around 30 are preferred. 
 
 To sum up the parameters for the dynamic case with the numerical approach are:
@@ -167,7 +162,7 @@ Also here the proportional gains 10, 20, 30 and 100 are tested.  Regarding the n
 The desired mass is always zero as explained before.  Equivalent results to the ones from  Fig. \ref{fig:mass_kp100dt5e-3} can be seen in Fig. \ref{fig:analyt_cm3} for the analytical case. Starting close to the minimum $\mathrm{\gamma = 1e-2}$ shows good minimization. But when doing a similar motion starting a bit farther from the minimum (see see Fig. \ref{fig:analyt_cm2}) the effect of $\mathrm{\gamma}$ is different. In this second motion the minimum is not found and during the trajectory the peak is even higher than without controller what is something to avoid. This is because it starts farther from the minimum, with higher RG, which causes a fast motion at the beginning. Some of the joint limits are reached, causing the minimization to stop. Evolving from this new configuration without minimization leads to a higher mass. In this tests the joint limit avoidance strategy is not implemented. But this is just to show again the high sensitivity of the analytical approach to the changes in $\mathrm{\gamma}$.
 Therefore a lower $\mathrm{\gamma}$ is chosen, although the local minimum is not found. 
 For lower proportional gains the effect of $\mathrm{\gamma}$ is not so high so gains around 30 are preferred.
-For proportional gains of 30 the table \ref{table:dynamic_opt_values} shows the optimal values of the parameters for this experiment. \\
+For proportional gains of 30 the table \ref{table:dynamic_opt_values} shows the most favorable values of the parameters for this experiment. \\
 %
 %
 \begin{figure}[!htp!]
@@ -187,16 +182,13 @@ The parameters found for the static case work well at low speeds in both approac
 	\centering
 	\caption{Dynamic motion along y}
 	\label{table:dynamic_opt_values}
-	\begin{tabular}{|c|c|c|c|c|c|c|c|}
-		\hline
-		\textbf{Approach}   & \textbf{Step size} & \textbf{Nº iterations} & \textbf{$\mathrm{\zeta}$}  &  \textbf{$\mathrm{\gamma}$} & \textbf{Kp}  \\ \hline
-		\textbf{Numerical}  &  5e-3       & 10-30                          & 0.4/1                  & -         &  ${\sim}$30                          \\  \textbf{Analytical} &   5e-3       & 2-4                             &  0.4/1                  & 1e-3         & ${\sim}$30                         \\ \hline
-		
-               
+	\begin{tabular}{@{}|c|c|c|c|c|c|@{}}
+		\toprule
+		\textbf{Approach}   & \textbf{Step size} & \textbf{Number iterations} & \textbf{$\mathrm{\zeta}$} & \textbf{$\mathrm{\gamma}$} & \textbf{$\mathrm{K_p}$}\\  \midrule
+		\textbf{Numerical}  & 5e-4 to 5e-3       & 10-30                      & \multirow{2}{*}{0.4/1} & -     & \multirow{2}{*}{$\sim$30} \\ \cmidrule(r){1-3} \cmidrule(lr){5-5}
+		\textbf{Analytical} & 5e-3               & 2-4                        &                        & 1e-3  &                           \\ \bottomrule
 	\end{tabular}
 \end{table}
-
-
 
 
 \section{Integration with SMU}
@@ -280,7 +272,7 @@ The points where the velocities exceed slightly the allowed maximum correspond t
 
 
 
-For the numerical approach the optimal parameters found at high speeds (1 $\mathrm{m/s}$) work fine at lower speeds. At low speeds (0.2 $\mathrm{m/s}$) a higher number of iterations ($\mathrm{n_{max} \approx 20}$) and high gains ($\mathrm{K_p \approx 100}$) would give a bit better minimization (up to 20\% lower reflected mass). But still with these parameters the optimization is fine. \\
+For the numerical approach the parameters found at high speeds (1 $\mathrm{m/s}$) work fine at lower speeds. At low speeds (0.2 $\mathrm{m/s}$) a higher number of iterations ($\mathrm{n_{max} \approx 20}$) and high gains ($\mathrm{K_p \approx 100}$) would give a bit better minimization (up to 20\% lower reflected mass). But still with these parameters the optimization is fine. \\
 %
  For the analytical approach, the parameters found at high speeds do not perform well at low speeds. At low speeds  $\mathrm{\gamma}$ has to be at least 1e-2. At high speeds such high $\mathrm{\gamma}$ causes very high torques, and some joints tend to reach their limit. The high sensitivity of the analytical approach is due to its higher non-normalized velocities. An alternative approach would be setting a higher $\mathrm{n_{max}}$ with normalized velocities. Normalized velocities would make the tuning more robust since the velocity bounds are smaller, and the high number of iterations would ensure good dynamics. Using low $\mathrm{K_p}$  no oscillations would appear close to the minimum. And the computational efficiency would still allow real time capabilities, since this approach is not so computationally expensive as the numerical one.   
  However, for this alternative to be possible, one must ensure that there are not local maxima between the current configuration and the local minimum (see Fig. \ref{fig:bad_case_3d}).\\

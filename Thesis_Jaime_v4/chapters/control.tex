@@ -221,7 +221,7 @@ Mathematica is not able to return this integral as a composition of elementary f
 
 
 
-For our case with the 8-DOF robot, an attempt is done using curve fittting. If successful, this would generate a function, from this point cloud, that could be used as an input to the solvers provided by MATLAB Optimization Toolbox. For this the function \textit{fit} from MATLAB is used. This functions allows to fit a curve to a surface up to a degree of five for each of the inputs ($\mathrm{q_1}$ and $\mathrm{q_4}$ in our case).  However, the obtained functions do not resemble enough the original grid because the degree of $\mathrm{q_1}$ and $\mathrm{q_4}$ needs to be higher than five. The difficulty increases when the robot is following a trajectory because the surface changes with the direction of the end-effector. One possible approach could be the use of neural networks to find a better fitting of the curve, but this is out of the scope of this thesis. Being this approach discarded, one needs to work with numerical values. 
+For our case with the 8-DOF robot, an attempt is done using curve fitting. If successful, this would generate a function, from this point cloud, that could be used as an input to the solvers provided by MATLAB Optimization Toolbox. For this the function \textit{fit} from MATLAB is used. This functions allows to fit a curve to a surface up to a degree of five for each of the inputs ($\mathrm{q_1}$ and $\mathrm{q_4}$ in our case).  However, the obtained functions do not resemble enough the original grid because the degree of $\mathrm{q_1}$ and $\mathrm{q_4}$ needs to be higher than five. The difficulty increases when the robot is following a trajectory because the surface changes with the direction of the end-effector. One possible approach could be the use of neural networks to find a better fitting of the curve, but this is out of the scope of this thesis. Being this approach discarded, one needs to work with numerical values. 
 
 
 
@@ -249,7 +249,7 @@ Here, two examples are explained for better understanding:
 	
 \end{enumerate}
 
-Where $dim_{max_{i}}$ is the data length of the $ith$ dimension. It is clear to see that when setting both dimensions to their relative maximim values, $[dim_{max_{1}}, \ dim_{max_{2}}]$, only the global extrema are found.
+Where $dim_{max_{i}}$ is the data length of the $ith$ dimension. It is clear to see that when setting both dimensions to their relative maximum values, $[dim_{max_{1}}, \ dim_{max_{2}}]$, only the global extrema are found.
 
 
 \begin{figure}[htb]
@@ -294,7 +294,7 @@ Although intuitive and easy to implement it does not work well with pseudo-monot
 
 %The advantage of this algorithm is mainly the speed {\color{red} FIND A BETTER ADVANTAGE because if this approach is only for offline optimization actually it does not important that much the speed!! }  because it requires, in the worst case, 3 comparisons per element.
 
-The standard way to find the minima of a given grid is with small sliding windows. A more accurate way is: First finding all the minima in each self-motion manifold slice with constant position of the elbow (see Fig.\ref{fig:maxminfilter1}). Secondly doing an equivalent minimization for each position of the linear axis (see Fig.\ref{fig:maxminfilter2}). 
+The standard way to find the minima of a given grid is with small sliding windows. A more accurate way is: First finding all the minima in each self-motion manifold slice with constant position of the elbow (see Fig. \ref{fig:maxminfilter1}). Secondly doing an equivalent minimization for each position of the linear axis (see Fig. \ref{fig:maxminfilter2}). 
 And finally getting the common minima from both sets. This strategy was implemented here, and performs better than simply filtering with small sliding windows. 
 
 \paragraph{Continuity of the Global Minimum}
